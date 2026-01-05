@@ -17,9 +17,8 @@ This README follows the following structure (Temporary – 2026/01/06):
 2. [Dataset](#dataset)  
 3. [Methodology & Library Usage](#methodology--library-usage)  
 4. [Results](#results)  
-5. [How to Reproduce](#how-to-reproduce)  
-6. [Future Work](#future-work)  
-7. [Reference](#reference)
+5. [Future Work](#future-work)  
+6. [Reference](#reference)
 
 ---
 
