@@ -51,3 +51,44 @@ For this dataset, it is not difficult to obtain year-by-year data, as it is easy
 ### 1.4.2 Shenzhen:
 
 ### 1.4.3 KnowAir:
+
+The KnowAir dataset was obtained from the following URL: https://zenodo.org/records/15614907.
+It is published by Wang et al. (2025). 
+
+The dataset contains air quality data collected from two major, densely populated regions in China, recorded hourly from 2016 to 2023:
+- The Beijing-Tianjin-Hebei and Surrounding Areas BTHSA, with data from 228 monitoring stations.
+- The Yangtze River Delta YRD, with data from 127 monitoring stations.
+
+The dataset contains 2 csv files that descibe the coordiates of the monitoring stations and 2 NetCDF files that contain the hourly air quality data for each region. The NetCDF files are collections of aligned 2-D arrays that all share the same coordinates time x station ID. Each 2-D array represents a different air quality variable, such as PM2.5 concentration, Ozone, etc. The following tables demonstrates the meaning of each variable in the 4 files.
+
+####  Dataset dictionary
+
+| Feature | Description | Notes|
+|----------|----------|----------|
+|Coordinates: 
+| time   |     | datetime64: 2016-01-01 to 2023-12-31 |
+| station   |  |  string   |
+|Air Quality Variables from CNEMC: |
+| PM2.5 | Fine particulate matter | float|
+|O3 | Ozone | float|
+|Meteorological Variables from ERA5 Reanalysis:
+|t2m| 2-meter air temperature | float|
+|d2m| 2-meter dew point temperature | float|
+|tp| Total precipitation | float|
+|sp| Surface pressure | float|
+|blh| Boundary layer height | float|
+|msdwswrf| Mean surface downward short-wave radiation flux | float|
+|u100| U-component of wind at 100m | float|
+|v100| V-component of wind at 100m | float|
+
+#### station Dictionary
+| Feature | Description | Notes|
+|----------|----------|----------|
+| station_id   |  station id   |  |
+| station_name   | chinese name |     |
+| city | chinese name of the city the station is in |  |
+| city_en | english name of the city the station is in |  |
+| lon | longitude of the station |  |
+| lat | latitude of the station | |
+
+
