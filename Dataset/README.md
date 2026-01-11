@@ -17,8 +17,6 @@ In this folder, our developer follows this structure to organize the dataset:
 │   │   └── Dataset.csv
 │   ├── Government of Canada
 │   │   └── Dataset.csv
-│   └── Quebec
-│       └── Dataset.csv
 └── International
     ├── Beijing
     │   └── Dataset.csv
