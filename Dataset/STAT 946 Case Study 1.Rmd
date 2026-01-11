@@ -63,32 +63,31 @@ The dataset contains 2 csv files that descibe the coordiates of the monitoring s
 
 ####  Dataset dictionary
 
-| Feature | Description | Notes|
-|----------|----------|----------|
+| Feature | Definition |
+|----------|----------|
 |Coordinates: 
-| time   |     | datetime64: 2016-01-01 to 2023-12-31 |
-| station   |  |  string   |
+| time   |  datetime64: 2016-01-01T00:00:00.000000000 to 2023-12-31T23:00:00.000000000   |
+| station   |  |
 |Air Quality Variables from CNEMC: |
-| PM2.5 | Fine particulate matter | float|
-|O3 | Ozone | float|
+| PM2.5 | Fine particulate matter | 
+|O3 | Ozone | 
 |Meteorological Variables from ERA5 Reanalysis:
-|t2m| 2-meter air temperature | float|
-|d2m| 2-meter dew point temperature | float|
-|tp| Total precipitation | float|
-|sp| Surface pressure | float|
-|blh| Boundary layer height | float|
-|msdwswrf| Mean surface downward short-wave radiation flux | float|
-|u100| U-component of wind at 100m | float|
-|v100| V-component of wind at 100m | float|
+|t2m| 2-meter air temperature | 
+|d2m| 2-meter dew point temperature | 
+|tp| Total precipitation | 
+|sp| Surface pressure | 
+|blh| Boundary layer height | 
+|msdwswrf| Mean surface downward short-wave radiation flux | 
+|u100| U-component of wind at 100m | 
+|v100| V-component of wind at 100m | 
 
 #### station Dictionary
-| Feature | Description | Notes|
-|----------|----------|----------|
-| station_id   |  station id   |  |
-| station_name   | chinese name |     |
-| city | chinese name of the city the station is in |  |
-| city_en | english name of the city the station is in |  |
-| lon | longitude of the station |  |
-| lat | latitude of the station | |
-
+| Feature | Definition |
+|----------|----------|
+| station_id   |  station id   |
+| station_name   | chinese name |   
+| city | chinese name of the city the station is in |
+| city_en | english name of the city the station is in |
+| lon | longitude of the station |
+| lat | latitude of the station |
 
