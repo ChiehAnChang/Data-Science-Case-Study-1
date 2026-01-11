@@ -287,76 +287,76 @@ of districts. In total, there are 2,891,393 air quality records, 1,898,453 (real
 meteorological data are collected at a district (or city) level every hour. Weather forecast has a district (or city)
 level record of two coming days, with a temporal granularity of 3 hour, or 6 hour, or 12 hour. The feature definitions of each part of data are described as follows.
 
-#### City Data (`city.csv`)
+#### 1. City Data (`city.csv`)
 
-| Feature Name | Definition |
-| :--- | :--- |
-| **City ID** | A 3-digit number representing the unique identifier for a city. |
-| **Chinese Name** | The name of the city in Chinese. |
-| **English Name** | The Chinese Pinyin corresponding to the city's Chinese Name. |
-| **Latitude** | The latitude coordinate of the city center (chosen as the town hall). |
-| **Longitude** | The longitude coordinate of the city center (chosen as the town hall). |
-| **Cluster ID** | Indicates the city cluster: `1` for 'Cluster A' (near Beijing) and `2` for 'Cluster B' (near Guangzhou). |
+| Feature Name | DataType | Definition |
+| :--- | :--- | :--- |
+| **City ID** | Integer | A 3-digit number representing the unique identifier for a city (e.g., "001"). |
+| **Chinese Name** | String | The name of the city in Chinese. |
+| **English Name** | String | The Chinese Pinyin corresponding to the city's Chinese Name. |
+| **Latitude** | Float | The latitude coordinate of the city center (town hall). |
+| **Longitude** | Float | The longitude coordinate of the city center (town hall). |
+| **Cluster ID** | Integer | Indicates the city cluster: `1` for 'Cluster A' and `2` for 'Cluster B'. |
 
-#### District Data (`district.csv`)
+#### 2. District Data (`district.csv`)
 
-| Feature Name | Definition |
-| :--- | :--- |
-| **District ID** | A 5-digit number representing the district; the first 3 digits correspond to the City ID. |
-| **Chinese Name** | The name of the district in Chinese. |
-| **English Name** | The Chinese Pinyin corresponding to the district's Chinese Name. |
-| **City ID** | The identifier of the city to which the district belongs. |
+| Feature Name | DataType | Definition |
+| :--- | :--- | :--- |
+| **District ID** | Integer | A 5-digit number representing the district; the first 3 digits correspond to the City ID. |
+| **Chinese Name** | String | The name of the district in Chinese. |
+| **English Name** | String | The Chinese Pinyin corresponding to the district's Chinese Name. |
+| **City ID** | Integer | The identifier of the city to which the district belongs. |
 
-#### Air Quality Monitoring Station Data (`station.csv`)
+#### 3. Air Quality Monitoring Station Data (`station.csv`)
 
-| Feature Name | Definition |
-| :--- | :--- |
-| **Station ID** | A 6-digit number representing the station; the first 3 digits correspond to the City ID. |
-| **Chinese Name** | The name of the station in Chinese. |
-| **English Name** | The Chinese Pinyin corresponding to the station's Chinese Name. |
-| **Latitude** | The latitude coordinate of the station. |
-| **Longitude** | The longitude coordinate of the station. |
-| **District ID** | The identifier of the district to which the station belongs; used to link meteorology and forecast data. |
+| Feature Name | DataType | Definition |
+| :--- | :--- | :--- |
+| **Station ID** | Integer | A 6-digit number representing the station; the first 3 digits correspond to the City ID. |
+| **Chinese Name** | String | The name of the station in Chinese. |
+| **English Name** | String | The Chinese Pinyin corresponding to the station's Chinese Name. |
+| **Latitude** | Float | The latitude coordinate of the station. |
+| **Longitude** | Float | The longitude coordinate of the station. |
+| **District ID** | Integer | The identifier of the district to which the station belongs. |
 
-#### Air Quality Data (`airquality.csv`)
+#### 4. Air Quality Data (`airquality.csv`)
 
-| Feature Name | Definition |
-| :--- | :--- |
-| **Station ID** | The identifier for the air quality monitoring station. |
-| **Time** | The timestamp of the air quality record. |
-| **PM25** | Concentration of PM2.5 in ug/m³. |
-| **PM10** | Concentration of PM10 in ug/m³. |
-| **NO2** | Concentration of Nitrogen Dioxide in ug/m³. |
-| **CO** | Concentration of Carbon Monoxide in mg/m³. |
-| **O3** | Concentration of Ozone in ug/m³. |
-| **SO2** | Concentration of Sulfur Dioxide in ug/m³. |
+| Feature Name | DataType | Definition |
+| :--- | :--- | :--- |
+| **Station ID** | Integer | The identifier for the air quality monitoring station. |
+| **Time** | DateTime | The timestamp of the air quality record (e.g., "2014-05-01 00:00:00"). |
+| **PM25** | Float | Concentration of PM2.5 in ug/m³. |
+| **PM10** | Float | Concentration of PM10 in ug/m³. |
+| **NO2** | Float | Concentration of Nitrogen Dioxide in ug/m³. |
+| **CO** | Float | Concentration of Carbon Monoxide in mg/m³. |
+| **O3** | Float | Concentration of Ozone in ug/m³. |
+| **SO2** | Float | Concentration of Sulfur Dioxide in ug/m³. |
 
-#### Meteorology Data (`meteorology.csv`)
+#### 5. Meteorology Data (`meteorology.csv`)
 
-| Feature Name | Definition |
-| :--- | :--- |
-| **ID** | Corresponds to either the District ID or City ID. |
-| **Time** | The timestamp of the meteorological record. |
-| **Weather** | A code (0-16) representing weather conditions (e.g., 0=Sunny, 1=Cloudy, 2=Overcast, 3=Rainy, etc.). |
-| **Temperature** | The temperature in Celsius ($^\circ$C). |
-| **Pressure** | The surface pressure in hPa. |
-| **Humidity** | The relative humidity percentage. |
-| **Wind Speed** | The speed of the wind in meters per second ($m/s$). |
-| **Wind Direction** | A code (0-24) representing wind direction (e.g., 0=No wind, 1=East, 2=West, 3=South, 4=North, etc.). |
+| Feature Name | DataType | Definition |
+| :--- | :--- | :--- |
+| **ID** | Integer | Corresponds to either the District ID or City ID. |
+| **Time** | DateTime | The timestamp of the meteorological record. |
+| **Weather** | Float | A code (0-16) representing weather conditions (e.g., 0=Sunny, 1=Cloudy). |
+| **Temperature** | Float | The temperature in Celsius ($^\circ$C). |
+| **Pressure** | Float | The surface pressure in hPa. |
+| **Humidity** | Float | The relative humidity percentage. |
+| **Wind Speed** | Float | The speed of the wind in meters per second ($m/s$). |
+| **Wind Direction** | Float | A code (0-24) representing wind direction. |
 
-#### Weather Forecast Data (`weatherforecast.csv`)
+#### 6. Weather Forecast Data (`weatherforecast.csv`)
 
-| Feature Name | Definition |
-| :--- | :--- |
-| **ID** | Corresponds to either the District ID or City ID. |
-| **Forecast Time** | The time at which the forecast was issued. |
-| **Future Time** | The future time for which the weather is predicted. |
-| **Temporal Granularity** | The updating frequency/interval of the forecast (3, 6, or 12 hours). |
-| **Weather** | Predicted weather condition code; same definitions as in Meteorology data. |
-| **Up Temperature** | The upper bound/high temperature forecast. |
-| **Bottom Temperature** | The lower bound/low temperature forecast. |
-| **Wind Level** | The median value representing the wind level (e.g., 3.5 is used for level 3-4). |
-| **Wind Direction** | Predicted wind direction code; same definitions as in Meteorology data. |
+| Feature Name | DataType | Definition |
+| :--- | :--- | :--- |
+| **ID** | Integer | Corresponds to either the District ID or City ID. |
+| **Forecast Time** | DateTime | The time at which the forecast was issued. |
+| **Future Time** | DateTime | The future time for which the weather is predicted. |
+| **Temporal Granularity** | Integer | The updating frequency/interval of the forecast (3, 6, or 12 hours). |
+| **Weather** | Float | Predicted weather condition code (0-16). |
+| **Up Temperature** | Float | The upper bound/high temperature forecast (e.g., 28). |
+| **Bottom Temperature** | Float | The lower bound/low temperature forecast (e.g., 21). |
+| **Wind Level** | Float | The median value representing the wind level (e.g., 3.5 is used for level 3-4). |
+| **Wind Direction** | Float | Predicted wind direction code (0-24). |
 
 \newpage
 ### 1.4.3 KnowAir:
@@ -372,33 +372,33 @@ The dataset contains 2 csv files that describe the coordiates of the monitoring 
 
 ####  Dataset dictionary (`dataset_bthsa.nc and dataset_yrd.nc`)
 
-| Feature | Definition |
+| Feature | DataType | Definition |
 |----------|----------|
 |Coordinates: 
 | **time**   |  datetime64: 2016-01-01T00:00:00.000000000 to 2023-12-31T23:00:00.000000000   |
-| **station**   |  |
+| **station**   | String |
 |Air Quality Variables from CNEMC: |
-| **PM2.5** | Fine particulate matter | 
-| **O3** | Ozone | 
+| **PM2.5** | Float | Fine particulate matter | 
+| **O3** | Float | Ozone | 
 |Meteorological Variables from ERA5 Reanalysis:
-|**t2m**| 2-meter air temperature | 
-|**d2m**| 2-meter dew point temperature | 
-|**tp**| Total precipitation | 
-|**sp**| Surface pressure | 
-|**blh**| Boundary layer height | 
-|**msdwswrf**| Mean surface downward short-wave radiation flux | 
-|**u100**| U-component of wind at 100m | 
-|**v100**| V-component of wind at 100m | 
+|**t2m**| Float | 2-meter air temperature | 
+|**d2m**| Float | 2-meter dew point temperature | 
+|**tp**| Float | Total precipitation | 
+|**sp**| Float | Surface pressure | 
+|**blh**| Float | Boundary layer height | 
+|**msdwswrf**| Float | Mean surface downward short-wave radiation flux | 
+|**u100**| Float | U-component of wind at 100m | 
+|**v100**| Float | V-component of wind at 100m | 
 
 #### station Dictionary (`station_bthsa.csv and station_yrd.csv`)
-| Feature | Definition |
-|----------|----------|
-| **station_id**   |  station id   |
-| **station_name**   | chinese name |   
-| **city** | chinese name of the city the station is in |
-| **city_en** | english name of the city the station is in |
-| **lon** | longitude of the station |
-| **lat** | latitude of the station |
+| Feature | DataType | Definition |
+|----------|----------|----------|
+| **station_id**   | String | station id   |
+| **station_name**   | String | chinese name |   
+| **city** | String | chinese name of the city the station is in |
+| **city_en** | String | english name of the city the station is in |
+| **lon** | Float | longitude of the station |
+| **lat** | Float | latitude of the station |
 
 \newpage
 \phantomsection 
