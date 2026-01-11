@@ -1,0 +1,156 @@
+---
+title: "STAT 946 Case Study 1"
+author: "Andy, Erick, Henry, Jason, Peter"
+date: "2026-01-10"
+output: pdf_document
+---
+
+# 1 Datasets
+
+## 1.1 Air Pollutant Data
+
+### 1.1.1 Ontario:
+
+The Ontario Air Pollutant Data was obtained from the following URL: https://www.airqualityontario.com/history/index.php.  
+It is published by the Government of Ontario. We restrict the downloaded data to only contain the particular pollutant that we care about, which is PM2.5.
+
+Each row of the dataset represents an observation by a station with multiple dates from January to December, recorded day by day.  
+For the columns, the following table demonstrates the meaning of each column.
+
+| Feature name | Definition |
+|-------------|------------|
+| Station ID | A unique identifier for the station where PM2.5 measurements were recorded. It is an integer object. |
+| Pollutant | Here, it is always assigned to fine particulate matter for PM2.5 measurement. It is a redundant column where all rows have the same value and could be further removed. It is a string object. |
+| Date | The date of the measurements in Ontario time. It is represented in the format YYYY-MM-DD. It should be a date object. |
+| HXX | Measurement of PM2.5 from XX:00 to XX:59, where XX represents 01 to 24. The value 24 is an exception, where H24 corresponds to 00:00 to 00:59. It should be a datetime object. |
+
+For this dataset, it is not difficult to obtain year-by-year data, as it is easy to download by year and each file contains all the dates for that year. However, if we want the full dataset from 2010 to 2024, further merging of the datasets is required.
+
+### 1.1.2 British Columbia:
+
+### 1.1.3 Alberta:
+
+### 1.1.4 Winnipeg, Manitoba:
+
+## 1.2 Meteorological Data
+
+### 1.2.1 Canada:
+
+The Historical Climate Data (Canada) dataset was obtained from the following URL: <https://climate.weather.gc.ca/>. This dataset is sourced from the official Environment and Climate Change Canada (ECCC) archive.\
+
+It provides comprehensive historical weather observations from meteorological stations across Canada. The data includes key climatic variables such as air temperature, precipitation (rain and snow), wind speed, wind direction, and humidity.\
+
+| Feature name | DataType | Definition |
+|-------------------------|------------------------|------------------------|
+| Longitude (x) | Float | The geographic longitude of the station in decimal degrees (North American Datum 1983 - NAD83). Negative values indicate West. |
+| Latitude (y) | Float | The geographic latitude of the station in decimal degrees (NAD83). Positive values indicate North. |
+| Station Name | String | The official name of the climate observation station (e.g., "TORONTO CITY"). |
+| Climate ID | String / Int | A unique 7-digit identifier assigned by the Meteorological Service of Canada. (Note: Often stored as a string to preserve leading zeros). |
+| Date/Time (LST) | DateTime | The full timestamp of the observation in ISO 8601 format (YYYY-MM-DD HH:MM). Crucial: This is always Local Standard Time (LST). It does not adjust for Daylight Saving Time. |
+| Year | Int | The year of the observation. |
+| Month | Int | The month of the observation (1-12). |
+| Day | Int | The day of the month (1-31). |
+| Time (LST) | Time | The hour of the observation (00:00 to 23:00). Based on Local Standard Time. |
+| Temp (°C) | Float | Dry Bulb Temperature. The temperature of the ambient air in degrees Celsius. |
+| Dew Point Temp (°C) | Float | The temperature to which the air would have to be cooled (at constant pressure) to become saturated. Used to calculate humidity. |
+| Rel Hum (%) | Float | Relative Humidity. The ratio of the actual amount of water vapor in the air to the maximum amount it can hold at that temperature, expressed as a percentage. |
+| Wind Dir (10s deg) | Float | Wind Direction. The direction from which the wind is blowing. |
+| Wind Spd (km/h) | Float | Wind Speed. The average wind speed over the 2-minute period ending at the time of observation, in kilometers per hour. |
+| Visibility (km) | Float | The greatest distance at which a black object of suitable dimensions can be seen and recognized against the horizon sky. |
+| Stn Press (kPa) | Float | Station Pressure. The atmospheric pressure measured at the station's elevation (not corrected to sea level), in kilopascals (1 kPa = 10 mb). |
+| Wind Chill | Float | An index indicating how cold the weather feels to the average person due to the combined effect of cold temperature and wind. Only calculated when Temp \< 0°C. |
+| Weather | Category | A textual description of the "Present Weather" observed at the station. (See detailed breakdown below). |
+
+Detailed Breakdown: The Weather Column The Weather column in ECCC data is a composite string. It is constructed by combining Intensity, Descriptor, and Precipitation/Obstruction.\
+
+1.  Sky Conditions (Cloud Cover)\
+    Clear: Sky is clear (0/10 to 1/10 cloud cover).\
+    Mainly Clear: Mostly clear (1/10 to 4/10 cloud cover).\
+    Mostly Cloudy: More clouds than clear sky (5/10 to 9/10 cloud cover).\
+    Cloudy: Overcast (10/10 cloud cover).\
+    \
+2.  Precipitation (Can be Light, Moderate, or Heavy)\
+    Rain: Liquid precipitation.\
+    Drizzle: Very small liquid drops (slower falling).\
+    Snow: Frozen precipitation (flakes).\
+    Snow Grains: Very small, white, opaque grains of ice.\
+    Ice Crystals: Tiny ice needles or plates (diamond dust).\
+    Ice Pellets: Frozen raindrops (sleet).\
+    Hail: Solid balls of ice (diameter \> 5mm).\
+    \
+3.  Descriptors (Modifiers)\
+    Showers: Precipitation is intermittent (e.g., Rain Showers, Snow Showers).\
+    Freezing: Liquid precipitation freezing on contact (e.g., Freezing Rain, Freezing Drizzle, Freezing Fog).\
+    Blowing: Wind raising snow/sand to a height interfering with visibility (e.g., Blowing Snow).\
+    Drifting: Wind moving snow near the ground (e.g., Drifting Snow).\
+    Thunderstorms: Electrical storms (can be combined: Thunderstorm with Rain).\
+    \
+4.  Obstructions to Vision\
+    Fog: Visibility reduced to less than 1 km by water droplets.\
+    Mist: Visibility reduced (1 km to 10 km) by water droplets.\
+    Haze: Visibility reduced by dry particles (dust/pollutants).\
+    Smoke: Visibility reduced by smoke (wildfires/industrial).\
+
+Common Combined Examples in the Dataset:\
+Rain,Fog (Raining and Foggy)\
+Moderate Snow (Snowing with moderate intensity)\
+Heavy Rain,Thunderstorm\
+Blowing Snow (Wind speed is high, visibility is low due to snow)\
+
+Using scripting tools like Python, leverage Station_Inventory.csv provided by ECCC to filter target site IDs and time ranges, then combine this with ECCC's fixed-format URLs to automate bulk CSV downloads and data merging.
+
+## 1.3 Traffic Data
+
+### 1.3.1 Statistics Canada:
+
+### 1.3.2 Government of Canada:
+
+### 1.3.3 Québec (in French):
+
+## 1.4 International Data
+
+### 1.4.1 Beijing:
+
+### 1.4.2 Shenzhen:
+
+### 1.4.3 KnowAir:
+
+The KnowAir dataset was obtained from the following URL: https://zenodo.org/records/15614907.
+It is published by Wang et al. (2025). 
+
+The dataset contains air quality data collected from two major, densely populated regions in China, recorded hourly from 2016 to 2023:
+- The Beijing-Tianjin-Hebei and Surrounding Areas BTHSA, with data from 228 monitoring stations.
+- The Yangtze River Delta YRD, with data from 127 monitoring stations.
+
+The dataset contains 2 csv files that descibe the coordiates of the monitoring stations and 2 NetCDF files that contain the hourly air quality data for each region. The NetCDF files are collections of aligned 2-D arrays that all share the same coordinates time x station ID. Each 2-D array represents a different air quality variable, such as PM2.5 concentration, Ozone, etc. The following tables demonstrates the meaning of each variable in the 4 files.
+
+####  Dataset dictionary
+
+| Feature | Definition |
+|----------|----------|
+|Coordinates: 
+| time   |  datetime64: 2016-01-01T00:00:00.000000000 to 2023-12-31T23:00:00.000000000   |
+| station   |  |
+|Air Quality Variables from CNEMC: |
+| PM2.5 | Fine particulate matter | 
+|O3 | Ozone | 
+|Meteorological Variables from ERA5 Reanalysis:
+|t2m| 2-meter air temperature | 
+|d2m| 2-meter dew point temperature | 
+|tp| Total precipitation | 
+|sp| Surface pressure | 
+|blh| Boundary layer height | 
+|msdwswrf| Mean surface downward short-wave radiation flux | 
+|u100| U-component of wind at 100m | 
+|v100| V-component of wind at 100m | 
+
+#### station Dictionary
+| Feature | Definition |
+|----------|----------|
+| station_id   |  station id   |
+| station_name   | chinese name |   
+| city | chinese name of the city the station is in |
+| city_en | english name of the city the station is in |
+| lon | longitude of the station |
+| lat | latitude of the station |
+
