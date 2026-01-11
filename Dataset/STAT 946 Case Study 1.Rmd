@@ -102,10 +102,63 @@ Using scripting tools like Python, leverage Station_Inventory.csv provided by EC
 ## 1.3 Traffic Data
 
 ### 1.3.1 Statistics Canada:
+The Statistics Canada Traffic Flow data was obtained from the following URL: https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2022018-eng.htm
+It is published by Statistics Canada.
+
+We downloaded the dataset as a CSV export and kept the file in its original format without modification.
+
+Each row of the dataset represents a single traffic camera with its location and metadata (e.g., camera identifier, source/jurisdiction, and road name).
+For the columns, the following table demonstrates the meaning of each column.
+
+| Feature name | Definition |
+|-------------|------------|
+| WKT | Camera location geometry in WKT format: `POINT (longitude latitude)` (degrees). |
+| CSDUID | Census Subdivision identifier associated with the camera location. Treat as an ID (string) even if stored numerically. |
+| traffic_camera | Unique identifier for the traffic camera (one row per camera in this file). |
+| traffic_source | Data source/jurisdiction providing the camera feed (e.g., a province or municipality). |
+| camera_road | Road or corridor name associated with the camera, as provided by the source system. |
+| xYYYY_MM_DD | Daily vehicle count for the calendar date `YYYY-MM-DD` for the given camera. Column names follow the pattern `xYYYY_MM_DD` (e.g., `x2022_02_02`). This file includes 1368 daily columns spanning 2022-02-02 to 2025-10-31. Values are non-negative counts (stored as numeric; may appear as decimals due to missing values). Missing/blank values indicate no data available for that camera on that date. |
 
 ### 1.3.2 Government of Canada:
+The Traffic Flow (Débit de circulation) data was obtained from the following URL: https://open.canada.ca/data/en/dataset/c77c495a-2a4c-447e-9184-25722289007f.
+It is produced by Québec’s Ministry of Transport and Sustainable Mobility (MTMD).
 
-### 1.3.3 Québec (in French):
+We downloaded the dataset as a CSV export and kept the file in its original format without modification.
+
+Each row of the dataset represents one **traffic section** (a segment of the Québec road network).
+For the columns, the following table demonstrates the meaning of each column.
+
+| Feature name | Definition |
+|-------------|------------|
+| ide_sectn_trafc | Unique identifier for the traffic section. |
+| num_sectn_trafc | Traffic section number (the same number is used for both sides of divided roads). |
+| des_debut_sous_route | Description of the start of the sub-route. |
+| des_fin_sous_route | Description of the end of the sub-route. |
+| rtss_debut_chaing | Start RTSS and chainage (in metres) for the traffic section. |
+| rtss_fin_chaing | End RTSS and chainage (in metres) for the traffic section. |
+| annee_en_cours | Aggregated values for the current year, including DJMA (annual average daily traffic), DJMH (winter AADT), DJME (summer AADT), percentage of heavy vehicles, and the 30th highest hour. |
+| anneex | Aggregated values for year "x", including DJMA (annual average daily traffic), DJMH (winter AADT), DJME (summer AADT), and the percentage of heavy vehicles. |
+| dat_debut_sectn_trafc | Start date of the traffic section (format: YYYYMMDD). |
+| rtss_debut | Start RTSS for the traffic section. RTSS is a 14-character alphanumeric identifier in the MTQ linear reference system, structured as Route [99999], Tronçon [99], Section [999], Sous-route [9x9x]. |
+| val_chang_debut | Start chainage of the traffic section (in metres). |
+| rtss_fin | End RTSS for the traffic section. RTSS is a 14-character alphanumeric identifier in the MTQ linear reference system, structured as Route [99999], Tronçon [99], Section [999], Sous-route [9x9x]. |
+| val_chang_fin | End chainage of the traffic section (in metres). |
+| djma_annee_x | Reference year for DJMA (annual average daily traffic) for year "x". |
+| val_djma_annee_x | DJMA (annual average daily traffic) value for year "x" (unit: vehicles/day). |
+| djme_annee_x | Reference year for DJME (summer average daily traffic) for year "x". |
+| val_djme_annee_x | DJME (summer average daily traffic) value for year "x" (unit: vehicles/day). |
+| djmh_annee_x | Reference year for DJMH (winter average daily traffic) for year "x". |
+| val_djmh_annee_x | DJMH (winter average daily traffic) value for year "x" (unit: vehicles/day). |
+| cam_annee_x | Reference year for percentage of heavy vehicles for year "x". |
+| val_cam_annee_x | percentage of heavy vehicles value for year "x" (unit: %). |
+| val_30e_heure | Design hour (30th highest hour): estimate of the maximum 'normal' hourly traffic flow for the year. |
+| index_agreg | Flag indicating whether an aggregated historical data file is available for this section (O=Yes, N=No). |
+| index_sectn | Flag indicating whether annual report files for permanent counting sites are available (O=Yes, N=No). |
+| index_donnees | Flag indicating whether hourly data files (average hourly by day of week) are available (O=Yes, N=No). |
+| url_index_agregees | URL linking to the aggregated historical data file (PDF), when available. |
+| url_index_section | URL linking to annual report data files (PDF/XLS), when available. |
+| url_index_donnees | URL linking to hourly data files (XLS), when available. |
+| objectid | Unique internal identifier. |
 
 ## 1.4 International Data
 
