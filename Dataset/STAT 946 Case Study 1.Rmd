@@ -141,9 +141,9 @@ The dataset contains air quality data collected from two major, densely populate
 - The Beijing-Tianjin-Hebei and Surrounding Areas BTHSA, with data from 228 monitoring stations.
 - The Yangtze River Delta YRD, with data from 127 monitoring stations.
 
-The dataset contains 2 csv files that descibe the coordiates of the monitoring stations and 2 NetCDF files that contain the hourly air quality data for each region. The NetCDF files are collections of aligned 2-D arrays that all share the same coordinates time x station ID. Each 2-D array represents a different air quality variable, such as PM2.5 concentration, Ozone, etc. The following tables demonstrates the meaning of each variable in the 4 files.
+The dataset contains 2 csv files that describe the coordiates of the monitoring stations and 2 NetCDF (.nc) files that contain the hourly air quality data for each region. The NetCDF files are collections of aligned 2-D arrays that all share the same coordinates (time x station ID). Each 2-D array represents a different air quality variable, such as PM2.5 concentration, Ozone, etc. The following tables demonstrates the meaning of each variable in the 4 files.
 
-####  Dataset dictionary
+####  Dataset dictionary (`dataset_bthsa.nc and dataset_yrd.nc`)
 
 | Feature | Definition |
 |----------|----------|
@@ -162,7 +162,8 @@ The dataset contains 2 csv files that descibe the coordiates of the monitoring s
 |**msdwswrf**| Mean surface downward short-wave radiation flux | 
 |**u100**| U-component of wind at 100m | 
 |**v100**| V-component of wind at 100m | 
-#### station Dictionary
+
+#### station Dictionary (`station_bthsa.csv and station_yrd.csv`)
 | Feature | Definition |
 |----------|----------|
 | **station_id**   |  station id   |
