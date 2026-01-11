@@ -6,7 +6,7 @@ output:
     toc: false          
     citation_package: natbib
 bibliography: ref.bib
-biblio-style: unsrt        
+biblio-style: unsrtnat        
 natbiboptions: "numbers,square"
 nocite: '@*'
 header-includes:
@@ -22,18 +22,21 @@ header-includes:
 ---
 
 \begin{titlepage}
-\centering
-\vspace*{\fill}
-{\Huge STAT 946: Case Studies in Data Science \par}
-\vspace{1.5em}
-{\LARGE Case Study 1: Air quality in Canada \par}
-\vspace{1.5em}
-{\large Andy, Erick, Henry, Jason, Peter \par}
-\vspace{1em}
-{\large 2026-01-10 \par}
-\vspace*{\fill}
+    \centering
+    \vfill 
+    {\huge \textbf{STAT 946: Case Studies in Data Science} \par}
+    {\Large \textbf{Case Study 1: Air quality in Canada} \par}
+    \vspace{0.7cm} 
+    {\Large \textbf{Prepared by: Andy, Erick, Henry, Jason, Peter} \par}
+    \vspace{0.5cm} 
+    {\Large Instructor: Dr. Lysy \par}
+    {\large TA: Daniel Zhang \par}
+    \vfill 
+    {\Large University of Waterloo \par}
+    \vspace{0.5cm}
+    {\Large January 10, 2026 \par}
+    \vspace*{2cm}
 \end{titlepage}
-
 \setcounter{tocdepth}{4}
 \setcounter{secnumdepth}{4}
 \tableofcontents
@@ -46,22 +49,42 @@ header-includes:
 ### Ontario:
 
 The Ontario Air Pollutant Data was obtained from the following URL: https://www.airqualityontario.com/history/index.php.  
-It is published by the Government of Ontario.[@Government_of_Ontario_Air_Quality_Historical_Data_2024] We restrict the downloaded data to only contain the particular pollutant that we care about, which is PM2.5.
+It is published by the Government of Ontario [@Government_of_Ontario_Air_Quality_Historical_Data_2024].
 
-Each row of the dataset represents an observation by a station with multiple dates from January to December, recorded day by day.  
-For the columns, the following table demonstrates the meaning of each column.
+Based on the disclaimer provided by the Government of Ontario, these data have not been verified. The data are provided only for public awareness. It is suggested that the usage of the data be restricted to non-published documents due to the unverified nature of the data. Since the data follow the copyright of the Open Government Licence – Ontario, a request is required for business usage (any profit-related or paid usage). Since this is academic usage, there is no need to submit a request, and there is no restriction on copying the data in this case.
 
-| Feature name | Definition |
-|-------------|------------|
-| Station ID | A unique identifier for the station where PM2.5 measurements were recorded. It is an integer object. |
-| Pollutant | Here, it is always assigned to fine particulate matter for PM2.5 measurement. It is a redundant column where all rows have the same value and could be further removed. It is a string object. |
-| Date | The date of the measurements in Ontario time. It is represented in the format YYYY-MM-DD. It should be a date object. |
-| HXX | Measurement of PM2.5 from XX:00 to XX:59, where XX represents 01 to 24. The value 24 is an exception, where H24 corresponds to 00:00 to 00:59. It should be a datetime object. |
+Each row of the dataset represents an observation recorded by a station, with multiple dates from January to December, measured on a day-by-day basis.  
+For the columns, the following table demonstrates the data type of each feature and the meaning of each column.
 
-For this dataset, it is not difficult to obtain year-by-year data, as it is easy to download by year and each file contains all the dates for that year. However, if we want the full dataset from 2010 to 2024, further merging of the datasets is required.
+| Feature name | Type | Definition |
+|-------------|------------|------------|
+| Station ID | Integer | A unique identifier for the station where PM2.5 measurements were recorded. |
+| Pollutant | String | Here, it is always assigned to fine particulate matter for PM2.5 measurement. It is a redundant column, as all rows have the same value and could be removed. |
+| Date | Date | The date of the measurements in Ontario time. It is represented in the format YYYY-MM-DD. |
+| HXX | Datetime | Measurement of PM2.5 from XX:00 to XX:59, where XX represents values from 01 to 24. The value 24 is an exception, where H24 corresponds to 00:00 to 00:59. |
+
+For this dataset, it is not difficult to obtain year-by-year data, as the data can be easily downloaded by year and each file contains all dates for that year. In this case, if we want to download data from 2010 to 2024, there will be 15 clicks to download all datasets for each year across different locations. However, if we want the full dataset from 2010 to 2024, further merging of the datasets is required.
+
+
+
 \newpage
 
 ### British Columbia:
+The British Columbia Air Pollutant Data was obtained from the following URL: https://www.airqualityontario.com/history/index.php.  
+It is published by the Government of British Columbia [@Government_of_British_Columbia_Air_Quality_Station_Data_2024].
+
+Based on the disclaimer provided by the Government of British Columbia, these data have not been verified. The data are provided only for public awareness. Since the data follow the copyright of the Open Government Licence – British Columbia, there is no need to further request permission for usage. However, there cannot be any implicit mention of terms that imply government support for the ideas without authorization.
+
+Each row of the dataset represents an observation from a station with multiple dates from January to December, recorded day by day.  
+For the columns, the following table demonstrates the meaning of each column.
+
+| Feature name | Type | Definition |
+|-------------|------------|------------|
+| Date | Date | The date of the measurements in British Columbia time, in the format **MM/DD/YYYY**. |
+| Time | Integer | The time of the measurements in British Columbia time, represented as integers from **1 to 24**. There is no **0**. The end of a day is represented as **24:00**. |
+| PM25 | Float | The PM2.5 concentration, measured in **µg/m³**. |
+
+For this dataset, it is difficult to obtain year-by-year data, as it is required to download the data by year from each measurement station. There are more than 10 stations, and we hope to download data from 2010 to 2024, which could be 15 datasets for each station. This would lead to more than 150 required button clicks. It is suggested to use Python scraping
 
 \newpage
 ### Alberta:
