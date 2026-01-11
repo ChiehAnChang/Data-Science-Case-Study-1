@@ -49,6 +49,88 @@ For this dataset, it is not difficult to obtain year-by-year data, as it is easy
 ### 1.4.1 Beijing:
 
 ### 1.4.2 Shenzhen:
+This Dataset was obtained from the following URL: https://www.microsoft.com/en-us/research/project/urban-air/
+It is published by Urban Air Project (Urban Computing Team, Microsoft Research) 
+
+The Dataset  is comprised of six parts of data that were collected  over a period of one year (from 2014/05/01 to 2015/04/30), named city data, district data, air 
+quality station data, air quality data, meteorological data and weather forecast data, respectively. This dataset 
+covers 4 major Chinese cities (Beijing, Tianjin, Guangzhou and Shenzhen) and 39 adjacent cities within 300 
+kilometers to them. Each city is associated with a geo-location denoted by (latitude, longitude), containing a set 
+of districts. In total, there are 2,891,393 air quality records, 1,898,453 (real-time) meteorology records, and 
+910,576 weather forecast records. Air quality is recorded at 437 air quality stations every hour. The real-time 
+meteorological data are collected at a district (or city) level every hour. Weather forecast has a district (or city)
+level record of two coming days, with a temporal granularity of 3 hour, or 6 hour, or 12 hour. The feature definitions of each part of data are described as follows.
+
+#### 1. City Data (`city.csv`)
+
+| Feature Name | Definition |
+| :--- | :--- |
+| **City ID** | A 3-digit number representing the unique identifier for a city. |
+| **Chinese Name** | The name of the city in Chinese. |
+| **English Name** | The Chinese Pinyin corresponding to the city's Chinese Name. |
+| **Latitude** | The latitude coordinate of the city center (chosen as the town hall). |
+| **Longitude** | The longitude coordinate of the city center (chosen as the town hall). |
+| **Cluster ID** | Indicates the city cluster: `1` for 'Cluster A' (near Beijing) and `2` for 'Cluster B' (near Guangzhou). |
+
+#### 2. District Data (`district.csv`)
+
+| Feature Name | Definition |
+| :--- | :--- |
+| **District ID** | A 5-digit number representing the district; the first 3 digits correspond to the City ID. |
+| **Chinese Name** | The name of the district in Chinese. |
+| **English Name** | The Chinese Pinyin corresponding to the district's Chinese Name. |
+| **City ID** | The identifier of the city to which the district belongs. |
+
+#### 3. Air Quality Monitoring Station Data (`station.csv`)
+
+| Feature Name | Definition |
+| :--- | :--- |
+| **Station ID** | A 6-digit number representing the station; the first 3 digits correspond to the City ID. |
+| **Chinese Name** | The name of the station in Chinese. |
+| **English Name** | The Chinese Pinyin corresponding to the station's Chinese Name. |
+| **Latitude** | The latitude coordinate of the station. |
+| **Longitude** | The longitude coordinate of the station. |
+| **District ID** | The identifier of the district to which the station belongs; used to link meteorology and forecast data. |
+
+#### 4. Air Quality Data (`airquality.csv`)
+
+| Feature Name | Definition |
+| :--- | :--- |
+| **Station ID** | The identifier for the air quality monitoring station. |
+| **Time** | The timestamp of the air quality record. |
+| **PM25** | Concentration of PM2.5 in ug/m³. |
+| **PM10** | Concentration of PM10 in ug/m³. |
+| **NO2** | Concentration of Nitrogen Dioxide in ug/m³. |
+| **CO** | Concentration of Carbon Monoxide in mg/m³. |
+| **O3** | Concentration of Ozone in ug/m³. |
+| **SO2** | Concentration of Sulfur Dioxide in ug/m³. |
+
+#### 5. Meteorology Data (`meteorology.csv`)
+
+| Feature Name | Definition |
+| :--- | :--- |
+| **ID** | Corresponds to either the District ID or City ID. |
+| **Time** | The timestamp of the meteorological record. |
+| **Weather** | A code (0-16) representing weather conditions (e.g., 0=Sunny, 1=Cloudy, 2=Overcast, 3=Rainy, etc.). |
+| **Temperature** | The temperature in Celsius ($^\circ$C). |
+| **Pressure** | The surface pressure in hPa. |
+| **Humidity** | The relative humidity percentage. |
+| **Wind Speed** | The speed of the wind in meters per second ($m/s$). |
+| **Wind Direction** | A code (0-24) representing wind direction (e.g., 0=No wind, 1=East, 2=West, 3=South, 4=North, etc.). |
+
+#### 6. Weather Forecast Data (`weatherforecast.csv`)
+
+| Feature Name | Definition |
+| :--- | :--- |
+| **ID** | Corresponds to either the District ID or City ID. |
+| **Forecast Time** | The time at which the forecast was issued. |
+| **Future Time** | The future time for which the weather is predicted. |
+| **Temporal Granularity** | The updating frequency/interval of the forecast (3, 6, or 12 hours). |
+| **Weather** | Predicted weather condition code; same definitions as in Meteorology data. |
+| **Up Temperature** | The upper bound/high temperature forecast. |
+| **Bottom Temperature** | The lower bound/low temperature forecast. |
+| **Wind Level** | The median value representing the wind level (e.g., 3.5 is used for level 3-4). |
+| **Wind Direction** | Predicted wind direction code; same definitions as in Meteorology data. |
 
 ### 1.4.3 KnowAir:
 
@@ -66,28 +148,27 @@ The dataset contains 2 csv files that descibe the coordiates of the monitoring s
 | Feature | Definition |
 |----------|----------|
 |Coordinates: 
-| time   |  datetime64: 2016-01-01T00:00:00.000000000 to 2023-12-31T23:00:00.000000000   |
-| station   |  |
+| **time**   |  datetime64: 2016-01-01T00:00:00.000000000 to 2023-12-31T23:00:00.000000000   |
+| **station**   |  |
 |Air Quality Variables from CNEMC: |
-| PM2.5 | Fine particulate matter | 
-|O3 | Ozone | 
+| **PM2.5** | Fine particulate matter | 
+| **O3** | Ozone | 
 |Meteorological Variables from ERA5 Reanalysis:
-|t2m| 2-meter air temperature | 
-|d2m| 2-meter dew point temperature | 
-|tp| Total precipitation | 
-|sp| Surface pressure | 
-|blh| Boundary layer height | 
-|msdwswrf| Mean surface downward short-wave radiation flux | 
-|u100| U-component of wind at 100m | 
-|v100| V-component of wind at 100m | 
-
+|**t2m**| 2-meter air temperature | 
+|**d2m**| 2-meter dew point temperature | 
+|**tp**| Total precipitation | 
+|**sp**| Surface pressure | 
+|**blh**| Boundary layer height | 
+|**msdwswrf**| Mean surface downward short-wave radiation flux | 
+|**u100**| U-component of wind at 100m | 
+|**v100**| V-component of wind at 100m | 
 #### station Dictionary
 | Feature | Definition |
 |----------|----------|
-| station_id   |  station id   |
-| station_name   | chinese name |   
-| city | chinese name of the city the station is in |
-| city_en | english name of the city the station is in |
-| lon | longitude of the station |
-| lat | latitude of the station |
+| **station_id**   |  station id   |
+| **station_name**   | chinese name |   
+| **city** | chinese name of the city the station is in |
+| **city_en** | english name of the city the station is in |
+| **lon** | longitude of the station |
+| **lat** | latitude of the station |
 
