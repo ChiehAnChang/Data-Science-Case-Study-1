@@ -30,7 +30,52 @@ For this dataset, it is not difficult to obtain year-by-year data, as it is easy
 
 ### 1.1.3 Alberta:
 
+The Alberta Air Pollutant Data was obtained from the Alberta Data Management Platform, available at:
+https://datamanagementplatform.alberta.ca/Ambient
+
+The data is operated and reported by community-based, multi-stakeholder organizations (commonly referred to as airsheds) as well as the Government of Alberta. These organizations are responsible for monitoring ambient air quality across Alberta and submitting station-level observations to the platform.
+
+The data is subject to change at any time, as records may be further reviewed, corrected, or resubmitted by the reporting organizations. In addition, only data that has been officially submitted is available for download, and the displayed results depend on the selected search and filtering criteria.
+
+Each row in the dataset represents a single observation from a monitoring station at a specific date and time for a given pollutant. Unlike the Ontario dataset, the Alberta data is stored in a vertical (long) format, where measurements for different parameters and timestamps are recorded as separate rows rather than as multiple hourly columns.
+The dataset includes, but is not limited to, the following key variables:
+
+| Feature name | Definition                                                                   |
+| ------------ | ---------------------------------------------------------------------------- |
+| Station ID   | A unique identifier for the air monitoring station.                          |
+| Station Name | The name of the monitoring station operated by an airshed or the government. |
+| Parameter    | The air pollutant or environmental parameter being measured (e.g., PM2.5).   |
+| DateTime     | The date and time at which the observation was recorded.                     |
+| Value        | The measured concentration of the pollutant at the given time.               |
+| Units        | The unit of measurement associated with the parameter.                       |
+
+From a technical perspective, collecting the Alberta data requires additional processing. Rather than downloading a single consolidated file, data must be retrieved station by station based on filtering criteria such as operator type and available parameters. To handle this efficiently and reproducibly, a Python-based web scraping program was used to automate the download process. The script iterates over all eligible stations, retrieves their corresponding datasets, and compiles a master table that serves as a directory of all stations meeting the project requirements.
+
 ### 1.1.4 Winnipeg, Manitoba:
+
+The Winnipeg Air Quality Data was obtained from the City of Winnipeg Open Data Portal, available at:
+https://data.winnipeg.ca/Organizational-Support-Services/Air-Quality-deprecated-/f58p-2ju3/about_data
+
+The dataset was published and maintained by the City of Winnipeg. The data records air quality measurements collected across Winnipeg, Manitoba, through a network of environmental sensors deployed throughout the city.
+
+According to the data source, this dataset is currently marked as deprecated due to issues with the underlying data source, and it is no longer actively maintained. However, updates may resume in the future if a new data source is procured. Despite this designation, the dataset was last updated on November 26, 2025, and therefore remains valuable for historical analysis and recent trend exploration.
+
+Each row in the dataset represents a single observation recorded at a specific location and time. Measurements are collected at 5-minute intervals, resulting in a large, high-frequency time-series dataset.
+The dataset includes the following key variables:
+
+| Feature name     | Definition                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| ObservationID    | A unique identifier for each recorded observation.                                       |
+| ObservationTime  | The date and time when the measurement was recorded.                                     |
+| ThingID          | An identifier associated with the sensing device.                                        |
+| LocationName     | The name of the monitoring location within Winnipeg.                                     |
+| MeasurementType  | The type of environmental measurement (e.g., PM2.5 particulates, temperature, humidity). |
+| MeasurementValue | The recorded value of the measurement.                                                   |
+| MeasurementUnit  | The unit associated with the measurement value.                                          |
+| Location         | Geographic coordinates of the monitoring station.                                        |
+| Point            | Spatial point representation of the station location.                                    |
+
+Data collection for Winnipeg is relatively straightforward. All records are integrated into a single, centralized table that can be downloaded directly from the data portal without the need for station-by-station retrieval or automated scraping.
 
 ## 1.2 Meteorological Data
 
