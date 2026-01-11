@@ -1,18 +1,52 @@
 ---
-title: "STAT 946 Case Study 1"
-author: "Andy, Erick, Henry, Jason, Peter"
-date: "2026-01-10"
-output: pdf_document
+title: "" 
+output:
+  pdf_document:
+    number_sections: true
+    toc: false          
+    citation_package: natbib
+bibliography: ref.bib
+biblio-style: unsrt        
+natbiboptions: "numbers,square"
+nocite: '@*'
+header-includes:
+  - \usepackage{setspace}
+  - \doublespacing
+  - \usepackage{hyperref}
+  - \hypersetup{
+      colorlinks=false,
+      citebordercolor={0 1 0},
+      linkbordercolor={0 1 0},
+      pdfborder={0 0 1}
+    }
 ---
 
-# 1 Datasets
+\begin{titlepage}
+\centering
+\vspace*{\fill}
+{\Huge STAT 946: Case Studies in Data Science \par}
+\vspace{1.5em}
+{\LARGE Case Study 1: Air quality in Canada \par}
+\vspace{1.5em}
+{\large Andy, Erick, Henry, Jason, Peter \par}
+\vspace{1em}
+{\large 2026-01-10 \par}
+\vspace*{\fill}
+\end{titlepage}
 
-## 1.1 Air Pollutant Data
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+\tableofcontents
+\newpage
 
-### 1.1.1 Ontario:
+# Datasets
+
+## Air Pollutant Data
+
+### Ontario:
 
 The Ontario Air Pollutant Data was obtained from the following URL: https://www.airqualityontario.com/history/index.php.  
-It is published by the Government of Ontario. We restrict the downloaded data to only contain the particular pollutant that we care about, which is PM2.5.
+It is published by the Government of Ontario.[@Government_of_Ontario_Air_Quality_Historical_Data_2024] We restrict the downloaded data to only contain the particular pollutant that we care about, which is PM2.5.
 
 Each row of the dataset represents an observation by a station with multiple dates from January to December, recorded day by day.  
 For the columns, the following table demonstrates the meaning of each column.
@@ -25,16 +59,65 @@ For the columns, the following table demonstrates the meaning of each column.
 | HXX | Measurement of PM2.5 from XX:00 to XX:59, where XX represents 01 to 24. The value 24 is an exception, where H24 corresponds to 00:00 to 00:59. It should be a datetime object. |
 
 For this dataset, it is not difficult to obtain year-by-year data, as it is easy to download by year and each file contains all the dates for that year. However, if we want the full dataset from 2010 to 2024, further merging of the datasets is required.
+\newpage
 
-### 1.1.2 British Columbia:
+### British Columbia:
 
-### 1.1.3 Alberta:
+\newpage
+### Alberta:
+The Alberta Air Pollutant Data was obtained from the Alberta Data Management Platform, available at:
+https://datamanagementplatform.alberta.ca/Ambient
 
-### 1.1.4 Winnipeg, Manitoba:
+The data is operated and reported by community-based, multi-stakeholder organizations (commonly referred to as airsheds) as well as the Government of Alberta. These organizations are responsible for monitoring ambient air quality across Alberta and submitting station-level observations to the platform.
 
-## 1.2 Meteorological Data
+The data is subject to change at any time, as records may be further reviewed, corrected, or resubmitted by the reporting organizations. In addition, only data that has been officially submitted is available for download, and the displayed results depend on the selected search and filtering criteria.
 
-### 1.2.1 Canada:
+Each row in the dataset represents a single observation from a monitoring station at a specific date and time for a given pollutant. Unlike the Ontario dataset, the Alberta data is stored in a vertical (long) format, where measurements for different parameters and timestamps are recorded as separate rows rather than as multiple hourly columns.
+The dataset includes, but is not limited to, the following key variables:
+
+| Feature name | Definition                                                                   |
+| ------------ | ---------------------------------------------------------------------------- |
+| Station ID   | A unique identifier for the air monitoring station.                          |
+| Station Name | The name of the monitoring station operated by an airshed or the government. |
+| Parameter    | The air pollutant or environmental parameter being measured (e.g., PM2.5).   |
+| DateTime     | The date and time at which the observation was recorded.                     |
+| Value        | The measured concentration of the pollutant at the given time.               |
+| Units        | The unit of measurement associated with the parameter.                       |
+
+From a technical perspective, collecting the Alberta data requires additional processing. Rather than downloading a single consolidated file, data must be retrieved station by station based on filtering criteria such as operator type and available parameters. To handle this efficiently and reproducibly, a Python-based web scraping program was used to automate the download process. The script iterates over all eligible stations, retrieves their corresponding datasets, and compiles a master table that serves as a directory of all stations meeting the project requirements.
+
+
+\newpage
+### Winnipeg, Manitoba:
+The Winnipeg Air Quality Data was obtained from the City of Winnipeg Open Data Portal, available at:
+https://data.winnipeg.ca/Organizational-Support-Services/Air-Quality-deprecated-/f58p-2ju3/about_data
+
+The dataset was published and maintained by the City of Winnipeg. The data records air quality measurements collected across Winnipeg, Manitoba, through a network of environmental sensors deployed throughout the city.
+
+According to the data source, this dataset is currently marked as deprecated due to issues with the underlying data source, and it is no longer actively maintained. However, updates may resume in the future if a new data source is procured. Despite this designation, the dataset was last updated on November 26, 2025, and therefore remains valuable for historical analysis and recent trend exploration.
+
+Each row in the dataset represents a single observation recorded at a specific location and time. Measurements are collected at 5-minute intervals, resulting in a large, high-frequency time-series dataset.
+The dataset includes the following key variables:
+
+| Feature name     | Definition                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| ObservationID    | A unique identifier for each recorded observation.                                       |
+| ObservationTime  | The date and time when the measurement was recorded.                                     |
+| ThingID          | An identifier associated with the sensing device.                                        |
+| LocationName     | The name of the monitoring location within Winnipeg.                                     |
+| MeasurementType  | The type of environmental measurement (e.g., PM2.5 particulates, temperature, humidity). |
+| MeasurementValue | The recorded value of the measurement.                                                   |
+| MeasurementUnit  | The unit associated with the measurement value.                                          |
+| Location         | Geographic coordinates of the monitoring station.                                        |
+| Point            | Spatial point representation of the station location.                                    |
+
+Data collection for Winnipeg is relatively straightforward. All records are integrated into a single, centralized table that can be downloaded directly from the data portal without the need for station-by-station retrieval or automated scraping.
+
+
+\newpage
+## Meteorological Data
+
+### Canada:
 
 The Historical Climate Data (Canada) dataset was obtained from the following URL: <https://climate.weather.gc.ca/>. This dataset is sourced from the official Environment and Climate Change Canada (ECCC) archive.\
 
@@ -98,10 +181,10 @@ Heavy Rain , Thunderstorm\
 Blowing Snow (Wind speed is high, visibility is low due to snow)\
 
 Using scripting tools like Python, leverage Station_Inventory.csv provided by ECCC to filter target site IDs and time ranges, then combine this with ECCC's fixed-format URLs to automate bulk CSV downloads and data merging.
+\newpage
+## Traffic Data
 
-## 1.3 Traffic Data
-
-### 1.3.1 Statistics Canada:
+### Statistics Canada:
 The Statistics Canada Traffic Flow data was obtained from the following URL: https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2022018-eng.htm
 It is published by Statistics Canada.
 
@@ -118,8 +201,9 @@ For the columns, the following table demonstrates the meaning of each column.
 | traffic_source | Data source/jurisdiction providing the camera feed (e.g., a province or municipality). |
 | camera_road | Road or corridor name associated with the camera, as provided by the source system. |
 | xYYYY_MM_DD | Daily vehicle count for the calendar date `YYYY-MM-DD` for the given camera. Column names follow the pattern `xYYYY_MM_DD` (e.g., `x2022_02_02`). This file includes 1368 daily columns spanning 2022-02-02 to 2025-10-31. Values are non-negative counts (stored as numeric; may appear as decimals due to missing values). Missing/blank values indicate no data available for that camera on that date. |
+\newpage
 
-### 1.3.2 Government of Canada:
+### Government of Canada:
 The Traffic Flow (Débit de circulation) data was obtained from the following URL: https://open.canada.ca/data/en/dataset/c77c495a-2a4c-447e-9184-25722289007f.
 It is produced by Québec’s Ministry of Transport and Sustainable Mobility (MTMD).
 
@@ -159,12 +243,15 @@ For the columns, the following table demonstrates the meaning of each column.
 | url_index_section | URL linking to annual report data files (PDF/XLS), when available. |
 | url_index_donnees | URL linking to hourly data files (XLS), when available. |
 | objectid | Unique internal identifier. |
+\newpage
 
-## 1.4 International Data
+## International Data
 
-### 1.4.1 Beijing:
+### Beijing:
 
-### 1.4.2 Shenzhen:
+\newpage
+
+### Shenzhen:
 This Dataset was obtained from the following URL: https://www.microsoft.com/en-us/research/project/urban-air/
 It is published by Urban Air Project (Urban Computing Team, Microsoft Research) 
 
@@ -177,7 +264,7 @@ of districts. In total, there are 2,891,393 air quality records, 1,898,453 (real
 meteorological data are collected at a district (or city) level every hour. Weather forecast has a district (or city)
 level record of two coming days, with a temporal granularity of 3 hour, or 6 hour, or 12 hour. The feature definitions of each part of data are described as follows.
 
-#### 1. City Data (`city.csv`)
+#### City Data (`city.csv`)
 
 | Feature Name | Definition |
 | :--- | :--- |
@@ -188,7 +275,7 @@ level record of two coming days, with a temporal granularity of 3 hour, or 6 hou
 | **Longitude** | The longitude coordinate of the city center (chosen as the town hall). |
 | **Cluster ID** | Indicates the city cluster: `1` for 'Cluster A' (near Beijing) and `2` for 'Cluster B' (near Guangzhou). |
 
-#### 2. District Data (`district.csv`)
+#### District Data (`district.csv`)
 
 | Feature Name | Definition |
 | :--- | :--- |
@@ -197,7 +284,7 @@ level record of two coming days, with a temporal granularity of 3 hour, or 6 hou
 | **English Name** | The Chinese Pinyin corresponding to the district's Chinese Name. |
 | **City ID** | The identifier of the city to which the district belongs. |
 
-#### 3. Air Quality Monitoring Station Data (`station.csv`)
+#### Air Quality Monitoring Station Data (`station.csv`)
 
 | Feature Name | Definition |
 | :--- | :--- |
@@ -208,7 +295,7 @@ level record of two coming days, with a temporal granularity of 3 hour, or 6 hou
 | **Longitude** | The longitude coordinate of the station. |
 | **District ID** | The identifier of the district to which the station belongs; used to link meteorology and forecast data. |
 
-#### 4. Air Quality Data (`airquality.csv`)
+#### Air Quality Data (`airquality.csv`)
 
 | Feature Name | Definition |
 | :--- | :--- |
@@ -221,7 +308,7 @@ level record of two coming days, with a temporal granularity of 3 hour, or 6 hou
 | **O3** | Concentration of Ozone in ug/m³. |
 | **SO2** | Concentration of Sulfur Dioxide in ug/m³. |
 
-#### 5. Meteorology Data (`meteorology.csv`)
+#### Meteorology Data (`meteorology.csv`)
 
 | Feature Name | Definition |
 | :--- | :--- |
@@ -234,7 +321,7 @@ level record of two coming days, with a temporal granularity of 3 hour, or 6 hou
 | **Wind Speed** | The speed of the wind in meters per second ($m/s$). |
 | **Wind Direction** | A code (0-24) representing wind direction (e.g., 0=No wind, 1=East, 2=West, 3=South, 4=North, etc.). |
 
-#### 6. Weather Forecast Data (`weatherforecast.csv`)
+#### Weather Forecast Data (`weatherforecast.csv`)
 
 | Feature Name | Definition |
 | :--- | :--- |
@@ -248,6 +335,7 @@ level record of two coming days, with a temporal granularity of 3 hour, or 6 hou
 | **Wind Level** | The median value representing the wind level (e.g., 3.5 is used for level 3-4). |
 | **Wind Direction** | Predicted wind direction code; same definitions as in Meteorology data. |
 
+\newpage
 ### 1.4.3 KnowAir:
 
 The KnowAir dataset was obtained from the following URL: https://zenodo.org/records/15614907.
@@ -289,3 +377,16 @@ The dataset contains 2 csv files that describe the coordiates of the monitoring 
 | **lon** | longitude of the station |
 | **lat** | latitude of the station |
 
+\newpage
+\phantomsection 
+# Acknowledgements {-}
+We would like to express our sincere gratitude to Dr. Lysy and Teaching Assistant Daniel Zhang for their valuable guidance and supervision throughout this course. Their advising was instrumental in the successful completion of this case study.
+
+We also acknowledge the various government agencies and organizations listed in the references for providing open-access datasets. We are grateful for the permission to utilize these resources for academic purposes.
+
+Finally, we acknowledge the use of generative AI tools, specifically ChatGPT and Gemini, in the preparation of this report. These tools were utilized to refine grammatical fluency and ensure clarity of expression, allowing us to draft our initial thoughts in our own words before polishing. They also assisted in debugging code and formatting citations. However, these technologies served solely as supportive tools; the domain knowledge, analytical logic, and core ideas presented in this work remain the original intellectual product of the authors.
+
+\newpage
+\phantomsection
+\addcontentsline{toc}{section}{References}
+# References {-}
