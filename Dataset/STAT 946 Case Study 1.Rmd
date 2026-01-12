@@ -278,7 +278,7 @@ For the columns, the following table demonstrates the data type of each feature 
 
 ### Shenzhen:
 This Dataset was obtained from the following URL: https://www.microsoft.com/en-us/research/project/urban-air/
-It is published by Urban Air Project (Urban Computing Team, Microsoft Research) 
+It is published by Urban Air Project (Urban Computing Team, Microsoft Research) {@Microsoft_Research_Urban_Air_Quality_Analysis_2024}
 
 The Dataset  is comprised of six parts of data that were collected  over a period of one year (from 2014/05/01 to 2015/04/30), named city data, district data, air 
 quality station data, air quality data, meteorological data and weather forecast data, respectively. This dataset 
@@ -364,7 +364,7 @@ level record of two coming days, with a temporal granularity of 3 hour, or 6 hou
 ### 1.4.3 KnowAir:
 
 The KnowAir dataset was obtained from the following URL: https://zenodo.org/records/15614907.
-It is published by Wang et al. (2025). 
+It is published by Wang et al. (2025). [@Wang_et_al_KnowAir_PM25_GNN_Dataset_2020].
 
 The dataset contains air quality data collected from two major, densely populated regions in China, recorded hourly from 2016 to 2023:
 - The Beijing-Tianjin-Hebei and Surrounding Areas BTHSA, with data from 228 monitoring stations.
