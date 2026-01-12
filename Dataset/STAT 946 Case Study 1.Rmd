@@ -142,7 +142,7 @@ Data collection for Winnipeg is relatively straightforward. All records are inte
 
 ### Canada:
 
-The Historical Climate Data (Canada) dataset was obtained from the following URL: <https://climate.weather.gc.ca/>. This dataset is sourced from the official Environment and Climate Change Canada (ECCC) archive.\
+The Historical Climate Data (Canada) dataset was obtained from the following URL: <https://climate.weather.gc.ca/>. This dataset is sourced from the official Environment and Climate Change Canada (ECCC) archive.[@Environment_and_Climate_Change_Canada_Historical_Climate_Data]\
 
 It provides comprehensive historical weather observations from meteorological stations across Canada. The data includes key climatic variables such as air temperature, precipitation (rain and snow), wind speed, wind direction, and humidity.\
 
