@@ -37,8 +37,8 @@ header-includes:
     {\Large January 10, 2026 \par}
     \vspace*{2cm}
 \end{titlepage}
-\setcounter{tocdepth}{4}
-\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
 \tableofcontents
 \newpage
 
@@ -367,7 +367,7 @@ level record of two coming days, with a temporal granularity of 3 hour, or 6 hou
 | **Wind Direction** | Float | Predicted wind direction code (0-24). |
 
 \newpage
-### 1.4.3 KnowAir:
+### KnowAir:
 
 The KnowAir dataset was obtained from the following URL: https://zenodo.org/records/15614907.
 It is published by Wang et al. (2025). [@Wang_et_al_KnowAir_PM25_GNN_Dataset_2020].
