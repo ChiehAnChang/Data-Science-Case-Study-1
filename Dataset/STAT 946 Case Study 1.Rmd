@@ -204,7 +204,9 @@ Heavy Rain , Thunderstorm\
 Blowing Snow (Wind speed is high, visibility is low due to snow)\
 
 Using scripting tools like Python, leverage Station_Inventory.csv provided by ECCC to filter target site IDs and time ranges, then combine this with ECCC's fixed-format URLs to automate bulk CSV downloads and data merging.
+
 \newpage
+
 ## Traffic Data
 
 ### Statistics Canada:
@@ -271,11 +273,6 @@ For the columns, the following table demonstrates the data type of each feature 
 \newpage
 
 ## International Data
-
-### Beijing:
-
-\newpage
-
 ### Shenzhen:
 This Dataset was obtained from the following URL: https://www.microsoft.com/en-us/research/project/urban-air/
 It is published by Urban Air Project (Urban Computing Team, Microsoft Research) 
