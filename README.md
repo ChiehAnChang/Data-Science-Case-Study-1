@@ -1,6 +1,6 @@
 # Project README
 
-**Authors:** Andy, Erick, Henery, Jason, Peter (in alphabetical order)
+**Authors:** Andy, Erick, Henry, Jason, Peter (in alphabetical order)
 
 ## Acknowledgements
 This project was completed under the instruction and guidance of Professor Lysy and Teaching Assistant Diane Zhang.  
