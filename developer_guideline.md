@@ -59,3 +59,47 @@ This PR introduces ...
 **Pre-work Notes:**
 - [ ] ...
 ```
+
+
+## 4 Reproducible EDA Pipeline (uv + Quarto)
+
+This repo uses **GitHub Actions + uv + Quarto** to ensure the EDA workflow and Executive Summary are reproducible from a clean environment.
+
+## What CI Does
+On pushes to `main` (and selected dev branches), CI:
+1) installs deps from `uv.lock`
+2) runs `EDA/ci.py`
+3) renders `EDA/executive_summary.qmd` → `EDA/executive_summary.html`
+4) uploads the HTML as a workflow artifact
+5) (optional) deploys to GitHub Pages if enabled by the repo owner
+
+Workflow location:
+- `.github/workflows/`
+
+## File Contracts (Do Not Break)
+- **CI entry script:** `EDA/ci.py` (only script called directly by CI)
+- **Report source:** `EDA/executive_summary.qmd`
+- **Report output:** `EDA/executive_summary.html`
+
+If you rename/move any of the above, you must update the workflow YAML accordingly.
+
+## Dependencies (uv)
+Files:
+- `pyproject.toml`
+- `uv.lock`
+
+When changing dependencies:
+1) edit `pyproject.toml`
+2) run `uv sync`
+3) commit **both** `pyproject.toml` and `uv.lock`
+
+CI uses `uv sync --frozen`; outdated/missing `uv.lock` will fail CI.
+
+## Do Not Commit
+- `.venv/`
+- `build/`
+- `EDA/executive_summary.html`
+
+## Safe Team Workflow
+Work on a branch → push → confirm Actions is green → merge to `main`.
+""""
