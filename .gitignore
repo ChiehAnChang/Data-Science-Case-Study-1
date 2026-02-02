@@ -1,0 +1,8 @@
+.DS_Store
+.history/
+.Rproj.user
+.Rhistory
+.RData
+*combined.csv
+*_quick.csv
+.ipynb_checkpoints/
