@@ -1,0 +1,62 @@
+name: EDA REnder Pipeline (uv + Quarto)
+
+on:
+  push:
+    branches: ["main", "feature/infra"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  repro:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: |
+          python -m pip install --upgrade pip
+          pip install uv
+          uv --version
+
+      - name: Sync dependencies (locked)
+        run: |
+          uv sync --frozen
+
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Run EDA CI script
+        run: |
+          uv run python EDA/ci.py
+
+      - name: Render Executive Summary
+        run: |
+          quarto render EDA/executive_summary.qmd
+          test -f EDA/executive_summary.html
+
+      - name: Package site content
+        run: |
+          mkdir -p public
+          cp EDA/executive_summary.html public/index.html
+
+      - name: Upload Executive Summary (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: eda-exec-html
+          path: EDA/executive_summary.html
+          if-no-files-found: error
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
