@@ -1,0 +1,16 @@
+---
+title: "Executive Report (Smoke Test)"
+format:
+  html:
+    self-contained: true
+toc: false
+---
+## Purpose
+
+This is a smoke-test Executive Report rendered by Quarto in GitHub Actions.
+
+## What this confirms
+
+- Quarto is installed correctly on the CI runner
+- The repository workflow can render a single-file HTML report reproducibly
+- The resulting HTML is uploaded as a workflow artifact for submission
