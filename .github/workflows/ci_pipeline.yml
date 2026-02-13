@@ -2,7 +2,7 @@ name: EDA REnder Pipeline (uv + Quarto)
 
 on:
   push:
-    branches: ["main", "feature/infra"]
+    branches: ["main", "feature/pipeline"]
   workflow_dispatch: {}
 
 permissions:
@@ -34,7 +34,12 @@ jobs:
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Run EDA CI script
+      - name: Run ETL & EDA pipeline
+        continue-on-error: true
+        run: |
+          uv run python "ETL & EDA/ETL_EDA_pipeline.py"
+
+      - name: Verify figures exist (fallback to pre-committed)
         run: |
           uv run python EDA/ci.py
 

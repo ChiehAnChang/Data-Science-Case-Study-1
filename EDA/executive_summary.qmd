@@ -1,16 +1,39 @@
 ---
-title: "Executive Report (Smoke Test)"
+title: "BC PM2.5 Air Quality - Executive Report"
 format:
   html:
     self-contained: true
-toc: false
+toc: true
 ---
-## Purpose
 
-This is a smoke-test Executive Report rendered by Quarto in GitHub Actions.
+## Station Network & Air Zone Mapping
 
-## What this confirms
+![Station network with corrected air zone boundaries](../Assets/Outputs/bc_air_zones_station_network_corrected.png)
 
-- Quarto is installed correctly on the CI runner
-- The repository workflow can render a single-file HTML report reproducibly
-- The resulting HTML is uploaded as a workflow artifact for submission
+![Final assigned air zone network map](../Assets/Outputs/bc_air_quality_network_assigned_zones.png)
+
+## Overall EDA
+
+![Daily and weekly micro patterns](../Assets/Outputs/eda_micro_analysis_daily_weekly_patterns.png)
+
+![Monthly and yearly patterns](../Assets/Outputs/eda_act2_monthly_yearly_patterns.png)
+
+![Long-term timeline with seasonal decomposition](../Assets/Outputs/eda_act2_long_term_timeline_seasons.png)
+
+## Station Correlation
+
+![Station correlation heatmap (before grouping)](../Assets/Outputs/eda_station_corr_heatmap_before_grouping.png)
+
+![Station correlation heatmap (grouped by air zone)](../Assets/Outputs/eda_station_corr_heatmap_grouped_by_air_zone.png)
+
+## Zone-Level Analysis
+
+![Zone daily rhythm](../Assets/Outputs/eda_zone_act1_1_daily_rhythm.png)
+
+![Zone weekday vs weekend facets](../Assets/Outputs/eda_zone_act1_2_weekday_weekend_facets.png)
+
+![Zone weekly accumulation](../Assets/Outputs/eda_zone_act1_3_weekly_accumulation.png)
+
+![Zone monthly seasonality](../Assets/Outputs/eda_zone_act2_4_monthly_seasonality.png)
+
+![Zone year-over-year volatility](../Assets/Outputs/eda_zone_act2_5_yoy_volatility_facets.png)
