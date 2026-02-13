@@ -1,6 +1,6 @@
 ---
 format: 
-  pdf:
+  html:
     documentclass: article
     number-sections: true
     colorlinks: true
