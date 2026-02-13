@@ -20,7 +20,7 @@ from sklearn.metrics import (
 PROJECT_DIR = Path(__file__).resolve().parents[1]   # script in "ETL & EDA/"
 RAW_DIR = PROJECT_DIR / "Dataset" / "raw_datasets"
 
-PLOT_OUT_DIR = PROJECT_DIR / "Assets" / "ModelOutputs"      # Model plots
+PLOT_OUT_DIR = PROJECT_DIR / "Assets" / "Outputs" / "Model" / "image"     # Model plots
 
 PLOT_OUT_DIR.mkdir(parents=True, exist_ok=True)
 
