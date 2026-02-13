@@ -39,6 +39,12 @@ jobs:
         run: |
           uv run python "ETL & EDA/ETL_EDA_pipeline.py"
 
+      # --- NEW Model Pipeline ---
+      - name: Run Model Pipeline
+        continue-on-error: true
+        run: |
+          uv run python "Model/model_pipeline.py"
+
       - name: Verify figures exist (fallback to pre-committed)
         run: |
           uv run python EDA/ci.py
