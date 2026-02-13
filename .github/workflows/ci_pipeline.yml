@@ -2,7 +2,7 @@ name: EDA REnder Pipeline (uv + Quarto)
 
 on:
   push:
-    branches: ["main", "feature/pipeline"]
+    branches: ["main", "feature/pipeline", "feature/DataClean"]
   workflow_dispatch: {}
 
 permissions:
