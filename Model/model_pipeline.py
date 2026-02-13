@@ -17,7 +17,7 @@ from sklearn.metrics import (
 # -------------------------
 # Paths
 # -------------------------
-PROJECT_DIR = Path(__file__).resolve().parents[1]   # script in "ETL & EDA/"
+PROJECT_DIR = Path(__file__).resolve().parents[1]   # script in "Model/"
 RAW_DIR = PROJECT_DIR / "Dataset" / "raw_datasets"
 
 PLOT_OUT_DIR = PROJECT_DIR / "Assets" / "Outputs" / "Model" / "image"     # Model plots
@@ -91,17 +91,17 @@ def _pick_threshold(probs, y_true_bin, mode="fixed", fixed_tau=0.3, target_recal
 # -------------------------
 def train_eval_regional_gams_no_save(
     df,
-    train_end_year=2023,          # 与你原代码一致: train_data = data[data.index.year < 2023]
+    train_end_year=2023,        
     eval_years=(2024, 2025),
     threshold=15,
     plot_hours=300,
     plot_regions=None
 ):
     """
-    完全沿用你给的 GAM 训练方法（特征/terms/lambda 都一致），但不保存模型。
+    Train GAMs using the same method (features/terms/lambda are consistent), but do not save the models.
     """
 
-    # ---- 0) index处理 ----
+    # ---- 0) Index processing ----
     df = df.copy()
     if not isinstance(df.index, pd.DatetimeIndex):
         df.index = pd.to_datetime(df.index)
@@ -114,7 +114,7 @@ def train_eval_regional_gams_no_save(
     for region_name in df.columns:
         print(f"\n>>> Processing Region: {region_name}")
 
-        # ---- A) 特征工程（和你的一致）----
+        # ---- A) Feature engineering (consistent with yours) ----
         data = pd.DataFrame(index=df.index)
         data['y'] = df[region_name]
         data['lag3'] = data['y'].shift(3)
@@ -127,7 +127,7 @@ def train_eval_regional_gams_no_save(
 
         feature_cols = ['lag3', 'lag24', 'lag48', 'hour', 'weekday', 'month']
 
-        # ---- B) 训练集 ----
+        # ---- B) Training set ----
         train_data = data[data.index.year < train_end_year]
         if len(train_data) < 200:
             print(f"   [Skip] Too few train samples: {len(train_data)}")
@@ -138,7 +138,7 @@ def train_eval_regional_gams_no_save(
 
         print(f"   Train samples: {len(X_train)}")
 
-        # ---- C) GAM（与你代码一致）----
+        # ---- C) GAM (consistent with your code) ----
         gam = LinearGAM(
             s(0) + s(1) + s(2) +
             te(3, 4, n_splines=[12, 7]) +
@@ -149,7 +149,7 @@ def train_eval_regional_gams_no_save(
         model_store[region_name] = gam
         print(f"   ✅ Fitted. Pseudo R2: {gam.statistics_['pseudo_r2']['explained_deviance']:.4f}")
 
-        # ---- D) 分年测试 ----
+        # ---- D) Yearly testing ----
         for yy in eval_years:
             test_data = data[data.index.year == yy].copy()
             if len(test_data) == 0:
@@ -161,12 +161,12 @@ def train_eval_regional_gams_no_save(
 
             resid = y_test - y_pred
 
-            # 回归指标
+            # Regression metrics
             rmse = float(np.sqrt(mean_squared_error(y_test, y_pred)))
             mae = float(mean_absolute_error(y_test, y_pred))
             r2 = float(r2_score(y_test, y_pred))
 
-            # 事件指标（基于点预测阈值）
+            # Event metrics (based on point prediction threshold)
             y_true_bin = (y_test > threshold).astype(int)
             y_pred_bin = (y_pred > threshold).astype(int)
 
@@ -174,7 +174,7 @@ def train_eval_regional_gams_no_save(
             recall = float(recall_score(y_true_bin, y_pred_bin, zero_division=0))
             f1 = float(f1_score(y_true_bin, y_pred_bin, zero_division=0))
 
-            # 残差时序检验
+            # Residual time series tests
             acf1 = float(np.corrcoef(resid[1:], resid[:-1])[0, 1]) if len(resid) > 1 else np.nan
             lb = acorr_ljungbox(resid, lags=[24], return_df=True)
             lb_p24 = float(lb['lb_pvalue'].iloc[0])
@@ -209,7 +209,7 @@ def train_eval_regional_gams_no_save(
     #print("\n================== METRICS ==================")
     #display(report_df)
 
-    # ---- E) 可视化证据 ----
+    # ---- E) Visualization evidence ----
     if plot_regions is None:
         plot_regions = sorted(set([k[0] for k in pred_store.keys()]))
 
@@ -227,14 +227,14 @@ def train_eval_regional_gams_no_save(
             fig, axes = plt.subplots(2, 3, figsize=(18, 9), constrained_layout=True)
             fig.suptitle(f"{region} | Test {yy}", fontsize=14)
 
-            # 1) 时序拟合（前plot_hours）
+            # 1) Time series fit (first plot_hours)
             axes[0, 0].plot(d_short.index, d_short["y_true"], label="Actual", lw=1.3)
             axes[0, 0].plot(d_short.index, d_short["y_pred"], label="Pred", lw=1.2)
             axes[0, 0].set_title(f"Actual vs Pred (first {len(d_short)}h)")
             axes[0, 0].legend()
             axes[0, 0].grid(alpha=0.3)
 
-            # 2) 散点拟合
+            # 2) Scatter plot fit
             axes[0, 1].scatter(d["y_true"], d["y_pred"], s=8, alpha=0.3)
             lo = min(d["y_true"].min(), d["y_pred"].min())
             hi = max(d["y_true"].max(), d["y_pred"].max())
@@ -244,13 +244,13 @@ def train_eval_regional_gams_no_save(
             axes[0, 1].set_ylabel("Pred")
             axes[0, 1].grid(alpha=0.3)
 
-            # 3) 残差时序
+            # 3) Residual time series
             axes[0, 2].plot(d_short.index, d_short["resid"], lw=0.9, color="gray")
             axes[0, 2].axhline(0, color="black", lw=1)
             axes[0, 2].set_title("Residual (first window)")
             axes[0, 2].grid(alpha=0.3)
 
-            # 4) 残差ACF
+            # 4) Residual ACF
             if len(acf_vals) > 1:
                 lags = np.arange(1, min(49, len(acf_vals)))
                 axes[1, 0].bar(lags, acf_vals[1:len(lags)+1], alpha=0.8)
@@ -258,12 +258,12 @@ def train_eval_regional_gams_no_save(
             axes[1, 0].set_xlabel("Lag")
             axes[1, 0].grid(alpha=0.3)
 
-            # 5) 残差分布
+            # 5) Residual distribution
             sns.histplot(d["resid"], bins=40, kde=True, ax=axes[1, 1], color="steelblue")
             axes[1, 1].set_title("Residual Distribution")
             axes[1, 1].grid(alpha=0.3)
 
-            # 6) 日内曲线（观测vs预测）
+            # 6) Diurnal profile (observed vs predicted)
             tmp = d.copy()
             tmp["hour"] = tmp.index.hour
             hh = tmp.groupby("hour")[["y_true", "y_pred"]].mean().reset_index()
@@ -439,7 +439,7 @@ def plot_region(region, detail_dict, report_df, threshold=15, risk_threshold=0.3
     fig, axes = plt.subplots(3, 1, figsize=(15, 11), sharex=True, constrained_layout=True)
     row = report_df.loc[region]
 
-    # 1) 拟合 + CI
+    # 1) Fit + CI
     axes[0].plot(d.index, d['y_true'], color='black', lw=1.2, label='Actual')
     axes[0].plot(d.index, d['mu'], color='tab:blue', lw=1.2, label='Pred Mean')
     axes[0].fill_between(d.index, d['ci_lo'], d['ci_hi'], color='tab:blue', alpha=0.2, label='90% CI')
@@ -450,7 +450,7 @@ def plot_region(region, detail_dict, report_df, threshold=15, risk_threshold=0.3
     axes[0].legend(loc='upper right')
     axes[0].grid(alpha=0.25)
 
-    # 2) 超阈值概率 + TP/FP/FN
+    # 2) Exceedance probability + TP/FP/FN
     axes[1].plot(d.index, d['p_event'], color='purple', lw=1.1, label='P(y>threshold)')
     axes[1].axhline(risk_threshold, color='orange', ls='--', lw=1.2, label=f'RiskThr={risk_threshold}')
     axes[1].scatter(d.index[d['tp']], d.loc[d['tp'], 'p_event'], s=22, color='green', label='TP')
@@ -460,7 +460,7 @@ def plot_region(region, detail_dict, report_df, threshold=15, risk_threshold=0.3
     axes[1].legend(loc='upper right', ncol=4)
     axes[1].grid(alpha=0.25)
 
-    # 3) 残差
+    # 3) Residual
     resid = d['y_true'] - d['mu']
     axes[2].plot(d.index, resid, color='gray', lw=0.8, label='Residual')
     axes[2].plot(d.index, resid.rolling(24, min_periods=1).mean(), color='tab:blue', lw=1.2, label='24h rolling mean')
@@ -498,11 +498,11 @@ if __name__ == "__main__":
     # =========================
     report_df, pred_store, model_store = train_eval_regional_gams_no_save(
         df_imputed,
-        train_end_year=2023,      # 完全保持你原逻辑(<2023)
+        train_end_year=2023,      # Keep your original logic (<2023)
         eval_years=(2024, 2025),
         threshold=15,
         plot_hours=300,
-        plot_regions=None         # 或 ['Northeast']
+        plot_regions=None         # or ['Northeast']
     )
     
     # =========================
@@ -510,12 +510,12 @@ if __name__ == "__main__":
     # =========================
     m_report_df, detail_dict, threshold_table = run_pipeline_with_inmemory_models(
         df_imputed,
-        gam_models=model_store,              # 或 regional_models
+        gam_models=model_store,              # or regional_models
         threshold=15,
         risk_threshold=0.35,
         garch_train_year=2024,
         test_year=2025,
-        threshold_mode="fixed" # 或 "fixed"
+        threshold_mode="fixed" # or "target_recall_max3"
     )
     
     # =========================
