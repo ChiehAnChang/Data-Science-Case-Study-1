@@ -1,16 +1,25 @@
 ---
-title: "BC PM2.5 Short-term Forecasting Report"
-author: "Andy, Erick, Henry, Jason, Peter"
-date: last-modified
 format: 
-  html:
-    toc: true
+  pdf:
+    documentclass: article
     number-sections: true
-    code-fold: true
-    theme: cosmo
-    self-contained: true
-    fig-width: 8
-    fig-height: 5
+    colorlinks: true
+    fig-pos: 'H'
+fontsize: 12pt       
+linestretch: 1.0    
+geometry:
+  - top=0.65in       
+  - bottom=0.65in
+  - left=0.65in
+  - right=0.65in
+header-includes:
+  - \usepackage{titlesec}
+  - \titlespacing*{\section}{0pt}{12pt plus 4pt minus 2pt}{6pt plus 2pt minus 2pt}
+  - \titlespacing*{\subsection}{0pt}{6pt plus 2pt minus 2pt}{4pt plus 2pt minus 2pt}
+  - \usepackage{enumitem}
+  - \setlist{nolistsep}
+  - \setlength{\intextsep}{6pt plus 2pt minus 2pt}
+  - \setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
 ---
 
 \begin{titlepage}
@@ -22,7 +31,7 @@ format:
     \vspace{1.5cm}
     
     {\Large \textbf{Authors:} \par}
-    {\Large Andy, Erick, Henry, Jason, Peter \par}
+    {\Large Chieh-An (Andy) Chang, Erick, Henry, Jason, Peter \par}
     
     \vspace*{\fill}
 \end{titlepage}
@@ -82,33 +91,33 @@ Our univariate exploration revealed that PM2.5 concentrations follow distinct cy
 Simultaneously, on a broader scale, British Columbia experiences massive seasonal volatility. PM2.5 levels consistently reach their annual maximums between **July and September** (see @fig-annual-trends), corresponding directly with the provincial wildfire season.
 
 ::: {layout="[[40, 60]]" layout-width="50%" fig-align="center"}
-![Daily PM2.5 rhythms highlighting rush hour spikes.](../Assets/Outputs/EDA/image/eda_micro_analysis_daily_weekly_patterns.png){#fig-daily-rhythm}
+![Daily PM2.5 rhythms highlighting rush hour spikes.](./Assets/Outputs/EDA/image/eda_micro_analysis_daily_weekly_patterns.png){#fig-daily-rhythm}
 
-![Annual trends and seasonal volatility.](../Assets/Outputs/EDA/image/eda_act2_monthly_yearly_patterns.png){#fig-annual-trends}
+![Annual trends and seasonal volatility.](./Assets/Outputs/EDA/image/eda_act2_monthly_yearly_patterns.png){#fig-annual-trends}
 :::
 ## Seasonal Volatility and Geographic Correlation
 
 While these spikes occur annually, their intensity varies year-over-year, as evidenced by the extreme volatility observed in 2023 (see @fig-long-term-timeline). Moving beyond single-variable analysis, we examined the spatial correlation between monitoring stations. Initial heatmaps (@fig-corr-before) showed high linear correlation between many neighboring stations, suggesting that air quality events are regional rather than isolated.
 
 ::: {layout="[[40, 60]]" layout-width="50%" fig-align="center"}
-![Long-term seasonal timeline.](../Assets/Outputs/EDA/image/eda_act2_long_term_timeline_seasons.png){#fig-long-term-timeline}
+![Long-term seasonal timeline.](./Assets/Outputs/EDA/image/eda_act2_long_term_timeline_seasons.png){#fig-long-term-timeline}
 
-![Station correlation heatmap.](../Assets/Outputs/EDA/image/eda_station_corr_heatmap_before_grouping.png){#fig-corr-before}
+![Station correlation heatmap.](./Assets/Outputs/EDA/image/eda_station_corr_heatmap_before_grouping.png){#fig-corr-before}
 :::
 
 By grouping these stations into the province's **six official Air Zones**, we confirmed that stations within the same zone share nearly identical growth patterns (@fig-correlation-grouped), validating the geographic clustering shown in the map below (@fig-map).
 
 ::: {layout="[[40, 60]]" layout-width="50%" fig-align="center"}
-![Spatial distribution of the BC monitoring network.](../Assets/Outputs/EDA/image/bc_air_quality_network_assigned_zones.png){#fig-map}
+![Spatial distribution of the BC monitoring network.](./Assets/Outputs/EDA/image/bc_air_quality_network_assigned_zones.png){#fig-map}
 
-![Intra-zone correlation analysis.](../Assets/Outputs/EDA/image/eda_station_corr_heatmap_grouped_by_air_zone.png){#fig-correlation-grouped}
+![Intra-zone correlation analysis.](./Assets/Outputs/EDA/image/eda_station_corr_heatmap_grouped_by_air_zone.png){#fig-correlation-grouped}
 :::
 
 ## Regional Insights for Model Selection
 
 The final stage of our narrative involves regional differentiation. While the entire province experiences seasonal peaks, the **Southern Interior, Northeast, and Central Interior** zones face significantly higher fluctuation levels during the summer and fall (see @fig-regional-volatility). This is likely due to their mountainous terrain and proximity to forest fire ignition points.
 
-![Comparative annual volatility trends for each of the six BC Air Zones.](../Assets/Outputs/EDA/image/eda_zone_act2_4_monthly_seasonality.png){#fig-regional-volatility width="60%" fig-align="center"}
+![Comparative annual volatility trends for each of the six BC Air Zones.](./Assets/Outputs/EDA/image/eda_zone_act2_4_monthly_seasonality.png){#fig-regional-volatility width="60%" fig-align="center"}
 
 These findings provide the foundational logic for our methodology: because air quality is highly correlated within geographic clusters, we have chosen to develop **six specialized prediction models**, one for each air zone.
 
@@ -229,23 +238,23 @@ Now that we have successfully proven the concept, the next step involves transit
 # Appendix, Acknowledgment, and References {-}
 ## Appendix {-}
 **Figure A.1: Southern Interior Performance Summary**
-![Southern Interior Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Southern Interior_Test2025.png)
+![Southern Interior Performance Summary](./Assets/Outputs/Model/image/GAM_NoSave_Southern Interior_Test2025.png)
 *Captures the 13-day localized pattern (top-left) and the regional diurnal profile (bottom-right).*
 
 **Figure A.2: Central Interior Performance Summary**
-![Central Interior Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Central Interior_Test2025.png)
+![Central Interior Performance Summary](./Assets/Outputs/Model/image/GAM_NoSave_Central Interior_Test2025.png)
 
 **Figure A.3: Coastal Region Performance Summary**
-![Coastal Region Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Coastal_Test2025.png)
+![Coastal Region Performance Summary](./Assets/Outputs/Model/image/GAM_NoSave_Coastal_Test2025.png)
 
 **Figure A.4: Georgia Strait Performance Summary**
-![Georgia Strait Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Georgia Strait_Test2025.png)
+![Georgia Strait Performance Summary](./Assets/Outputs/Model/image/GAM_NoSave_Georgia Strait_Test2025.png)
 
 **Figure A.5: Lower Fraser Valley Performance Summary**
-![Lower Fraser Valley Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Lower Fraser Valley_Test2025.png)
+![Lower Fraser Valley Performance Summary](./Assets/Outputs/Model/image/GAM_NoSave_Lower Fraser Valley_Test2025.png)
 
 **Figure A.6: Northeast Region Performance Summary**
-![Northeast Region Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Northeast_Test2025.png)
+![Northeast Region Performance Summary](./Assets/Outputs/Model/image/GAM_NoSave_Northeast_Test2025.png)
 
 ## Acknowledgments {-}
 

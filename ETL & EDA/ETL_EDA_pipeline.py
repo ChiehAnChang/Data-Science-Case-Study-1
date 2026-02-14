@@ -16,7 +16,7 @@ PROJECT_DIR = Path(__file__).resolve().parents[1]   # script in "ETL & EDA/"
 RAW_DIR = PROJECT_DIR / "Dataset" / "raw_datasets"
 
 DATA_OUT_DIR = PROJECT_DIR / "Dataset" / "Outputs"     # cleaned datasets
-PLOT_OUT_DIR = PROJECT_DIR / "Assets" / "Outputs"      # EDA plots
+PLOT_OUT_DIR = PROJECT_DIR / "Assets" / "Outputs" / "EDA" / "image"     # EDA plots
 
 DATA_OUT_DIR.mkdir(parents=True, exist_ok=True)
 PLOT_OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -1506,5 +1506,5 @@ if __name__ == "__main__":
 
     print("\n✅ Full pipeline completed successfully (no pop-up plots).")
 
-
+    
 
