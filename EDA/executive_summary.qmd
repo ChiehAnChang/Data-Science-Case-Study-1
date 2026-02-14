@@ -218,7 +218,6 @@ This report was prepared for **STAT 946: Case Studies in Data Science** at the *
     \item \label{ref-3} C40 Knowledge Hub. (n.d.). WHO air quality guidelines. \url{https://www.c40knowledgehub.org/s/article/WHO-Air-Quality-Guidelines?language=en_US}
 \end{enumerate}
 
-\clearpage
 \appendix
 
 \renewcommand{\thefigure}{A.\arabic{figure}} 
