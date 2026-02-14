@@ -8,9 +8,9 @@ Exits non-zero only when figures are truly missing.
 import sys
 from pathlib import Path
 
-FIGURES_DIR = Path(__file__).resolve().parents[1] / "Assets" / "Outputs"
+EDA_FIGURES_DIR = Path(__file__).resolve().parents[1] / "Assets" / "Outputs" / "EDA" / "image"
 
-EXPECTED_FIGURES = [
+EDA_EXPECTED_FIGURES = [
     "eda_micro_analysis_daily_weekly_patterns.png",
     "eda_act2_monthly_yearly_patterns.png",
     "eda_act2_long_term_timeline_seasons.png",
@@ -25,12 +25,12 @@ EXPECTED_FIGURES = [
     "bc_air_quality_network_assigned_zones.png",
 ]
 
-missing = [f for f in EXPECTED_FIGURES if not (FIGURES_DIR / f).exists()]
+missing = [f for f in EDA_EXPECTED_FIGURES if not (EDA_FIGURES_DIR / f).exists()]
 
 if missing:
-    print(f"ERROR: {len(missing)} figure(s) missing from {FIGURES_DIR}:")
+    print(f"ERROR: {len(missing)} figure(s) missing from {EDA_FIGURES_DIR}:")
     for f in missing:
         print(f"  - {f}")
     sys.exit(1)
 
-print(f"All {len(EXPECTED_FIGURES)} figures present in {FIGURES_DIR}")
+print(f"All {len(EDA_EXPECTED_FIGURES)} figures present in {EDA_FIGURES_DIR}")
