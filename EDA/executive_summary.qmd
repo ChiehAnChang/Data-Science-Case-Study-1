@@ -254,7 +254,7 @@ This report was prepared for **STAT 946: Case Studies in Data Science** at the *
 ## How to Reproduce {-}
 
 * **GitHub Repository:** [Data-Science-Case-Study-1 Repository](https://github.com/ChiehAnChang/Data-Science-Case-Study-1)
-* **Marking Branch:** [Specify the branch to be used for marking]
+* **Marking Branch:** `release`
 
 ## References {-}
 
