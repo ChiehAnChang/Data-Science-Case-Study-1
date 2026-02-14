@@ -34,6 +34,10 @@ jobs:
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
+      - name: Install TinyTeX
+        run: |
+          quarto install tinytex
+
       - name: Run ETL & EDA pipeline
         continue-on-error: true
         run: |
@@ -52,22 +56,11 @@ jobs:
       - name: Render Executive Summary
         run: |
           quarto render EDA/executive_summary.qmd
-          test -f EDA/executive_summary.html
-
-      - name: Package site content
-        run: |
-          mkdir -p public
-          cp EDA/executive_summary.html public/index.html
+          test -f EDA/executive_summary.pdf
 
       - name: Upload Executive Summary (artifact)
         uses: actions/upload-artifact@v4
         with:
-          name: eda-exec-html
-          path: EDA/executive_summary.html
+          name: eda-exec-pdf
+          path: EDA/executive_summary.pdf
           if-no-files-found: error
-
-      - name: Publish to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public

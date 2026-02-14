@@ -2,13 +2,10 @@
 title: "BC PM2.5 Short-term Forecasting Report"
 author: "Andy, Erick, Henry, Jason, Peter"
 date: last-modified
-format: 
-  html:
+format:
+  pdf:
     toc: true
     number-sections: true
-    code-fold: true
-    theme: cosmo
-    self-contained: true
     fig-width: 8
     fig-height: 5
 ---
