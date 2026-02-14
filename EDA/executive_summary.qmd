@@ -1,13 +1,31 @@
 ---
-title: "BC PM2.5 Short-term Forecasting Report"
-author: "Andy, Erick, Henry, Jason, Peter"
-date: last-modified
-format:
+format: 
   pdf:
-    toc: true
+    documentclass: article
     number-sections: true
-    fig-width: 8
-    fig-height: 5
+    colorlinks: true
+    fig-pos: 'H'
+    toc: false         
+    toc-depth: 2       
+    subparagraph: true 
+fontsize: 12pt       
+linestretch: 1.0    
+geometry:
+  - top=0.65in       
+  - bottom=0.65in
+  - left=0.65in
+  - right=0.65in
+header-includes:
+  - \usepackage{titlesec}
+  - \usepackage{float}
+  - \titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{}{0pt}{} 
+  - \titlespacing*{\section}{0pt}{12pt plus 4pt minus 2pt}{6pt plus 2pt minus 2pt}
+  - \titlespacing*{\subsection}{0pt}{6pt plus 2pt minus 2pt}{4pt plus 2pt minus 2pt}
+  - \usepackage{enumitem}
+  - \setlist{nolistsep}
+  - \setlength{\intextsep}{6pt plus 2pt minus 2pt}
+  - \setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
+  - \setcounter{tocdepth}{2}  
 ---
 
 \begin{titlepage}
@@ -19,7 +37,7 @@ format:
     \vspace{1.5cm}
     
     {\Large \textbf{Authors:} \par}
-    {\Large Andy, Erick, Henry, Jason, Peter \par}
+    {\Large Chieh-An (Andy) Chang, Erick, Henry, Jason, Peter \par}
     
     \vspace*{\fill}
 \end{titlepage}
@@ -30,9 +48,7 @@ format:
 
 # Mandatory Context {-}
 
-We are the **Public Health Data Science Division** of British Columbia, mandated to monitor environmental risks that threaten public safety. Our team reports to the **Environmental Health Director**, who holds the authority to issue provincial air quality advisories and health alerts.
-
-As PM2.5 concentrations directly influence hospital surge capacity and emergency response timing, our primary role is to provide the evidence-based foresight the Director needs to coordinate with municipal health services. By transforming raw environmental data into predictive insights, we empower the Director to make proactive decisions that safeguard the health of British Columbians.
+We are the **Public Health Data Science Division** of British Columbia, mandated to monitor environmental risks that threaten public safety. Our team reports to the **Environmental Health Director**, who holds the authority to issue provincial air quality advisories and health alerts. As PM2.5 concentrations directly influence hospital surge capacity and emergency response timing, our primary role is to provide the evidence-based foresight the Director needs to coordinate with municipal health services. By transforming raw environmental data into predictive insights, we empower the Director to make proactive decisions that safeguard the health of British Columbians.
 
 \newpage
 
@@ -68,9 +84,7 @@ By providing early warning signals, the model aims to support government decisio
 
 # Exploratory Data Analysis & Data Narrative
 
-To develop a reliable predictive model, we must first characterize the underlying behavior of the atmosphere. Our analysis utilizes a dataset of **1,753,200 hourly observations** across **50 air quality monitoring stations** in British Columbia. This extensive record includes station coordinates, timestamps, and PM2.5 concentrations, allowing us to map both the timing and location of pollution events.
-
-Since our objective is short-term forecasting, our exploratory analysis focused on identifying repeatable temporal rhythms and geographic clusters.
+To develop a reliable predictive model, we must first characterize the underlying behavior of the atmosphere. Our analysis utilizes a dataset of **1,753,200 hourly observations** across **50 air quality monitoring stations** in British Columbia. This extensive record includes station coordinates, timestamps, and PM2.5 concentrations, allowing us to map both the timing and location of pollution events. Since our objective is short-term forecasting, our exploratory analysis focused on identifying repeatable temporal rhythms and geographic clusters.
 
 ## Temporal Rhythms: Daily and Weekly Cycles
 
@@ -83,6 +97,7 @@ Simultaneously, on a broader scale, British Columbia experiences massive seasona
 
 ![Annual trends and seasonal volatility.](../Assets/Outputs/EDA/image/eda_act2_monthly_yearly_patterns.png){#fig-annual-trends}
 :::
+
 ## Seasonal Volatility and Geographic Correlation
 
 While these spikes occur annually, their intensity varies year-over-year, as evidenced by the extreme volatility observed in 2023 (see @fig-long-term-timeline). Moving beyond single-variable analysis, we examined the spatial correlation between monitoring stations. Initial heatmaps (@fig-corr-before) showed high linear correlation between many neighboring stations, suggesting that air quality events are regional rather than isolated.
@@ -119,9 +134,7 @@ In this section, we present the two primary models implemented in our analysis a
 
 ### Regression Model (Forecasting)
 
-Our forecasting system operates on a localized basis, with six distinct regression models corresponding to the six air zones. Based on our Exploratory Data Analysis (EDA) and research, we selected a **Generalized Additive Model (GAM)**. We chose this approach because it excels at capturing non-linear patterns while retaining interpretability—allowing us to understand *why* a prediction was made.
-
-To make a prediction, the model utilizes six key pieces of information: past PM2.5 levels (from 3, 24, and 48 hours ago) to capture short-term history, and time-based indicators (Hour, Weekday, Month) to capture cyclical patterns.
+Our forecasting system operates on a localized basis, with six distinct regression models corresponding to the six air zones. Based on our Exploratory Data Analysis (EDA) and research, we selected a **Generalized Additive Model (GAM)**. We chose this approach because it excels at capturing non-linear patterns while retaining interpretability—allowing us to understand *why* a prediction was made. To make a prediction, the model utilizes six key pieces of information: past PM2.5 levels (from 3, 24, and 48 hours ago) to capture short-term history, and time-based indicators (Hour, Weekday, Month) to capture cyclical patterns.
 
 **Key Variables & Definitions:**
 
@@ -137,6 +150,7 @@ We combine these historical and cyclical insights to form the final prediction u
 $$
 E[PM_t] = \beta_0 + s(PM_{t-3}) + s(PM_{t-24}) + s(PM_{t-48}) + te(Hour, Weekday) + te(Hour, Month)
 $$
+
 ### Classifier Model (Risk Assessment)
 
 The classifier is built directly on top of the results from the GAM regression. While the regression predicts the *value*, we also need to understand the *uncertainty* (variation) to make a safe decision. To do this, we utilize a **Generalized Autoregressive Conditional Heteroskedasticity (GARCH)** model. The GARCH model analyzes the errors from our regression model to predict the current volatility. This allows us to construct a probabilistic interval around our prediction.
@@ -156,6 +170,7 @@ We estimate the current uncertainty using the following formula:
 $$
 \sigma^2_t = \omega + \alpha \epsilon^2_{t-1} + \beta \sigma^2_{t-1}
 $$
+
 **Decision Logic (Warning System):**
 
 To determine if a warning is necessary, we calculate the probability that the true PM2.5 value will exceed the safety threshold.
@@ -223,35 +238,104 @@ Now that we have successfully proven the concept, the next step involves transit
 
 \newpage
 
-# Appendix, Acknowledgment, and References {-}
-## Appendix {-}
-**Figure A.1: Southern Interior Performance Summary**
-![Southern Interior Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Southern Interior_Test2025.png)
-*Captures the 13-day localized pattern (top-left) and the regional diurnal profile (bottom-right).*
-
-**Figure A.2: Central Interior Performance Summary**
-![Central Interior Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Central Interior_Test2025.png)
-
-**Figure A.3: Coastal Region Performance Summary**
-![Coastal Region Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Coastal_Test2025.png)
-
-**Figure A.4: Georgia Strait Performance Summary**
-![Georgia Strait Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Georgia Strait_Test2025.png)
-
-**Figure A.5: Lower Fraser Valley Performance Summary**
-![Lower Fraser Valley Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Lower Fraser Valley_Test2025.png)
-
-**Figure A.6: Northeast Region Performance Summary**
-![Northeast Region Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Northeast_Test2025.png)
-
+# Appendix, Repository, Appendix and References {-}
 ## Acknowledgments {-}
 
 This report was prepared for **STAT 946: Case Studies in Data Science** at the **University of Waterloo**. We thank **Professor Martin Lysy** and **TA Daniel Zhang** for their guidance. While generative AI tools were used for grammar refinement and code debugging, all project ideas, decisions, and interpretations were made by the authors.
 
-## How to Reproduce {-}
+## Repository {-}
 
 * **GitHub Repository:** [Data-Science-Case-Study-1 Repository](https://github.com/ChiehAnChang/Data-Science-Case-Study-1)
-* **Marking Branch:** `release`
+* **Marking Branch:**  Please refer to the **release branch** for the final version of the code and report.
+
+## Appendix: {-}
+### EDA Figures: {-}
+![placeholder](../Assets/Outputs/EDA/image/eda_micro_analysis_daily_weekly_patterns.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_act2_monthly_yearly_patterns.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_act2_long_term_timeline_seasons.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_station_corr_heatmap_before_grouping.png)
+
+![placeholder](../Assets/Outputs/EDA/image/bc_air_zones_station_network_corrected.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_station_corr_heatmap_grouped_by_air_zone.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_zone_act1_1_daily_rhythm.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_zone_act1_2_weekday_weekend_facets.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_zone_act1_3_weekly_accumulation.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_zone_act2_4_monthly_seasonality.png)
+
+![placeholder](../Assets/Outputs/EDA/image/eda_zone_act2_5_yoy_volatility_facets.png)
+
+### Model Performance: {-}
+
+### Numerical Prediction Results Figures: {-}
+
+![Central Interior Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Central Interior_Test2025.png)
+
+![Coastal Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Coastal_Test2025.png)
+
+![Georgia Strait Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Georgia Strait_Test2025.png)
+
+![Lower Fraser Valley Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Lower Fraser Valley_Test2025.png)
+
+![Northeast Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Northeast_Test2025.png)
+
+![Southern Interior Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Southern Interior_Test2025.png)
+
+### Classification Performance by Metric {-}
+
+| Region | Accuracy | Difference in Accuracy (Our model - Baseline) |
+| :--- | :---: | :---: |
+| Central Interior | 0.972 | 0.017 |
+| Southern Interior | 0.983 | 0.011 |
+| Georgia Strait | 0.996 | 0.002 |
+| Coastal | 0.996 | 0.002 |
+| Northeast | 0.974 | 0.000 |
+| Lower Fraser Valley | 0.993 | -0.000 |
+
+: Accuracy Performance {#tbl-accuracy}
+
+| Region | F1 Score | Difference in F1 Score (Our model - Baseline) |
+| :--- | :---: | :---: |
+| Central Interior | 0.665 | 0.099 |
+| Southern Interior | 0.785 | 0.083 |
+| Georgia Strait | 0.828 | 0.069 |
+| Coastal | 0.654 | 0.026 |
+| Northeast | 0.805 | 0.008 |
+| Lower Fraser Valley | 0.644 | -0.027 |
+
+: F1 Score Performance {#tbl-f1}
+
+| Region | Recall | Difference in Recall (Our model - Baseline) |
+| :--- | :---: | :---: |
+| Central Interior | 0.657 | -0.044 |
+| Southern Interior | 0.771 | -0.028 |
+| Georgia Strait | 0.802 | -0.052 |
+| Coastal | 0.593 | -0.153 |
+| Northeast | 0.877 | 0.028 |
+| Lower Fraser Valley | 0.718 | -0.038 |
+
+: Recall Performance {#tbl-recall}
+
+| Region | Precision | Difference in Precision (Our model - Baseline) |
+| :--- | :---: | :---: |
+| Central Interior | 0.673 | 0.199 |
+| Southern Interior | 0.800 | 0.174 |
+| Georgia Strait | 0.856 | 0.172 |
+| Coastal | 0.729 | 0.186 |
+| Northeast | 0.744 | -0.007 |
+| Lower Fraser Valley | 0.583 | -0.019 |
+
+: Precision Performance {#tbl-precision}
+
+
+\newpage 
 
 ## References {-}
 
