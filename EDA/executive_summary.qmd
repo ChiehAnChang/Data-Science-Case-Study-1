@@ -6,26 +6,23 @@ format:
     colorlinks: true
     fig-pos: 'H'
     toc: false         
-    toc-depth: 2       
+    toc-depth: 2     
     subparagraph: true 
+    tbl-cap-location: top 
 fontsize: 12pt       
 linestretch: 1.0    
 geometry:
-  - top=0.65in       
-  - bottom=0.65in
-  - left=0.65in
-  - right=0.65in
+  - top=0.75in       
+  - bottom=0.75in
+  - left=0.75in
+  - right=0.75in
 header-includes:
   - \usepackage{titlesec}
   - \usepackage{float}
-  - \titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{}{0pt}{} 
-  - \titlespacing*{\section}{0pt}{12pt plus 4pt minus 2pt}{6pt plus 2pt minus 2pt}
-  - \titlespacing*{\subsection}{0pt}{6pt plus 2pt minus 2pt}{4pt plus 2pt minus 2pt}
   - \usepackage{enumitem}
   - \setlist{nolistsep}
-  - \setlength{\intextsep}{6pt plus 2pt minus 2pt}
-  - \setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
-  - \setcounter{tocdepth}{2}  
+  - \setcounter{tocdepth}{2}
+  - \usepackage{graphicx} 
 ---
 
 \begin{titlepage}
@@ -46,6 +43,7 @@ header-includes:
 
 \tableofcontents
 
+\newpage
 # Mandatory Context {-}
 
 We are the **Public Health Data Science Division** of British Columbia, mandated to monitor environmental risks that threaten public safety. Our team reports to the **Environmental Health Director**, who holds the authority to issue provincial air quality advisories and health alerts. As PM2.5 concentrations directly influence hospital surge capacity and emergency response timing, our primary role is to provide the evidence-based foresight the Director needs to coordinate with municipal health services. By transforming raw environmental data into predictive insights, we empower the Director to make proactive decisions that safeguard the health of British Columbians.
@@ -86,138 +84,103 @@ By providing early warning signals, the model aims to support government decisio
 
 To develop a reliable predictive model, we must first characterize the underlying behavior of the atmosphere. Our analysis utilizes a dataset of **1,753,200 hourly observations** across **50 air quality monitoring stations** in British Columbia. This extensive record includes station coordinates, timestamps, and PM2.5 concentrations, allowing us to map both the timing and location of pollution events. Since our objective is short-term forecasting, our exploratory analysis focused on identifying repeatable temporal rhythms and geographic clusters.
 
-## Temporal Rhythms: Daily and Weekly Cycles
+## Temporal Rhythms: Daily, Weekly and Seasonaility Cycles
 
-Our univariate exploration revealed that PM2.5 concentrations follow distinct cyclical patterns. By compressing four years of data into a single 24-hour cycle, we identified a clear "double-peak" rhythm (see @fig-daily-rhythm), surging during morning (07:00–09:00) and evening (16:00–19:00) rush hours. Furthermore, we observed a "lifestyle impact" where weekends exhibit generally higher PM2.5 levels than weekdays, peaking on Saturday.
+Our univariate exploration revealed that PM2.5 concentrations follow distinct cyclical patterns. By compressing four years of data into a single 24-hour cycle, we identified a clear "double-peak" rhythm (see Figure \ref{fig:daily-rhythm}), surging during morning (07:00–09:00) and evening (16:00–19:00) rush hours. Furthermore, we observed a "lifestyle impact" where weekends exhibit generally higher PM2.5 levels than weekdays, peaking on Saturday.
 
-Simultaneously, on a broader scale, British Columbia experiences massive seasonal volatility. PM2.5 levels consistently reach their annual maximums between **July and September** (see @fig-annual-trends), corresponding directly with the provincial wildfire season.
+Simultaneously, on a broader scale, British Columbia experiences massive seasonal volatility. PM2.5 levels consistently reach their annual maximums between **July and September** (see Figure \ref{fig:annual-trends}), corresponding directly with the provincial wildfire season. While these spikes occur annually, their intensity varies year-over-year, as evidenced by the extreme volatility observed in 2023 (see Figure \ref{fig:long-term-timeline}).
 
-::: {layout="[[40, 60]]" layout-width="50%" fig-align="center"}
-![Daily PM2.5 rhythms highlighting rush hour spikes.](../Assets/Outputs/EDA/image/eda_micro_analysis_daily_weekly_patterns.png){#fig-daily-rhythm}
-
-![Annual trends and seasonal volatility.](../Assets/Outputs/EDA/image/eda_act2_monthly_yearly_patterns.png){#fig-annual-trends}
-:::
-
-## Seasonal Volatility and Geographic Correlation
-
-While these spikes occur annually, their intensity varies year-over-year, as evidenced by the extreme volatility observed in 2023 (see @fig-long-term-timeline). Moving beyond single-variable analysis, we examined the spatial correlation between monitoring stations. Initial heatmaps (@fig-corr-before) showed high linear correlation between many neighboring stations, suggesting that air quality events are regional rather than isolated.
-
-::: {layout="[[40, 60]]" layout-width="50%" fig-align="center"}
-![Long-term seasonal timeline.](../Assets/Outputs/EDA/image/eda_act2_long_term_timeline_seasons.png){#fig-long-term-timeline}
-
-![Station correlation heatmap.](../Assets/Outputs/EDA/image/eda_station_corr_heatmap_before_grouping.png){#fig-corr-before}
-:::
-
-By grouping these stations into the province's **six official Air Zones**, we confirmed that stations within the same zone share nearly identical growth patterns (@fig-correlation-grouped), validating the geographic clustering shown in the map below (@fig-map).
-
-::: {layout="[[40, 60]]" layout-width="50%" fig-align="center"}
-![Spatial distribution of the BC monitoring network.](../Assets/Outputs/EDA/image/bc_air_quality_network_assigned_zones.png){#fig-map}
-
-![Intra-zone correlation analysis.](../Assets/Outputs/EDA/image/eda_station_corr_heatmap_grouped_by_air_zone.png){#fig-correlation-grouped}
-:::
+## Geographic Correlation
+ Moving beyond single-variable analysis, we examined the spatial correlation between monitoring stations. Initial heatmaps (see Figure \ref{fig:corr-before}) showed high linear correlation between many neighboring stations, suggesting that air quality events are regional rather than isolated. By grouping these stations into the province's **six official Air Zones[[2]](#ref-2)**, we confirmed that stations within the same zone share nearly identical growth patterns (see Figure \ref{fig:correlation-grouped}), validating the geographic clustering shown in the map below (see Figure \ref{fig:map}).
 
 ## Regional Insights for Model Selection
 
-The final stage of our narrative involves regional differentiation. While the entire province experiences seasonal peaks, the **Southern Interior, Northeast, and Central Interior** zones face significantly higher fluctuation levels during the summer and fall (see @fig-regional-volatility). This is likely due to their mountainous terrain and proximity to forest fire ignition points.
+The final stage of our narrative involves regional differentiation. While the entire province experiences seasonal peaks, the **Southern Interior, Northeast, and Central Interior** zones face significantly higher fluctuation levels during the summer and fall (see Figure \ref{fig:regional-volatility}). This is likely due to their mountainous terrain and proximity to forest fire ignition points.
 
-![Comparative annual volatility trends for each of the six BC Air Zones.](../Assets/Outputs/EDA/image/eda_zone_act2_4_monthly_seasonality.png){#fig-regional-volatility width="60%" fig-align="center"}
+(Other related figures: Figure \ref{fig:group-daily-rhythm-zone}, Figure \ref{fig:group-weekday-weekend-facets}, Figure \ref{fig:group-weekly-accumulation}, Figure \ref{fig:group-yoy-volatility-facets})
 
 These findings provide the foundational logic for our methodology: because air quality is highly correlated within geographic clusters, we have chosen to develop **six specialized prediction models**, one for each air zone.
 
 # Methodology & Statistical Learning Framework
 
 ## Overview
-
-In this section, we present the two primary models implemented in our analysis and the metrics used to evaluate them. The first is a **Regression Model**, designed to predict the specific PM2.5 value for the coming three hours. The second is a **Classifier Model**, which functions as a decision-support tool. It determines whether to issue a safety warning (Safe vs. Unsafe) by building upon the regression output and analyzing the associated risk intervals. The specific definitions of "safe" and "unsafe" are detailed in the model section below. Finally, we introduce the evaluation metrics used to assess the performance of each model separately.
+In this section, we present the two primary models implemented in our analysis and the metrics used to evaluate them. The first is a **Regression Model**, designed to predict specific PM2.5 values for the upcoming three-hour window. The second is a **Classifier Model**, which functions as a decision-support tool. It determines whether to issue a safety warning (Safe vs. Unsafe) by building upon the regression output and analyzing associated risk intervals. Finally, we introduce the evaluation metrics used to assess the performance of each model separately.
 
 ## Our Model
 
 ### Regression Model (Forecasting)
-
-Our forecasting system operates on a localized basis, with six distinct regression models corresponding to the six air zones. Based on our Exploratory Data Analysis (EDA) and research, we selected a **Generalized Additive Model (GAM)**. We chose this approach because it excels at capturing non-linear patterns while retaining interpretability—allowing us to understand *why* a prediction was made. To make a prediction, the model utilizes six key pieces of information: past PM2.5 levels (from 3, 24, and 48 hours ago) to capture short-term history, and time-based indicators (Hour, Weekday, Month) to capture cyclical patterns.
+Our forecasting system operates on six distinct regression models corresponding to the six air zones. We selected a **Generalized Additive Model (GAM)** because it excels at capturing complex, non-linear patterns while remaining fully **interpretable**. This ensures that our predictions are not just "black box" numbers, but are grounded in visible historical and cyclical trends.
 
 **Key Variables & Definitions:**
 
-* **$E[PM_t]$:** The expected (predicted) PM2.5 value at the future time $t$.
-* **$\beta_0$:** The intercept (baseline) term that aligns the prediction to the average PM2.5 level.
-* **$s(PM_{t-i})$:** A non-linear function capturing the short-term trend based on PM2.5 levels from **i = 3, 24, 48 hours ago**.
-* **$te(Hour, Weekday)$:** An interaction term that captures traffic and lifestyle patterns (e.g., morning rush hour on a Monday vs. a Sunday).
-* **$te(Hour, Month)$:** An interaction term that captures seasonal changes (e.g., heating usage in winter evenings vs. summer).
+* **$E[PM_t]$**: The expected (predicted) PM2.5 value at the future time $t$.
+* **$s(PM_{t-i})$**: A function capturing short-term trends from **3, 24, and 48 hours ago**.
+* **$te(\text{Hour}, \text{Weekday/Month})$**: Interaction terms capturing cyclical patterns, such as traffic-related rush hours or seasonal heating usage.
 
 **Model Specification:**
-
 We combine these historical and cyclical insights to form the final prediction using the following formula:
-$$
-E[PM_t] = \beta_0 + s(PM_{t-3}) + s(PM_{t-24}) + s(PM_{t-48}) + te(Hour, Weekday) + te(Hour, Month)
-$$
+$$E[PM_t] = \beta_0 + s(PM_{t-3}) + s(PM_{t-24}) + s(PM_{t-48}) + te(\text{Hour}, \text{Weekday}) + te(\text{Hour}, \text{Month})$$
 
 ### Classifier Model (Risk Assessment)
+While the regression provides the "average" expected value, we use the **GARCH Model** to quantify the **uncertainty (risk)** surrounding that prediction. This is critical for maintaining system credibility; a prediction of 14 (just below the safety limit) requires a warning if the current environment is highly volatile and unpredictable.
 
-The classifier is built directly on top of the results from the GAM regression. While the regression predicts the *value*, we also need to understand the *uncertainty* (variation) to make a safe decision. To do this, we utilize a **Generalized Autoregressive Conditional Heteroskedasticity (GARCH)** model. The GARCH model analyzes the errors from our regression model to predict the current volatility. This allows us to construct a probabilistic interval around our prediction.
+**Simplified Risk Components:**
 
-**Key Variables & Definitions:**
-
-* **$\sigma^2_t$:** The estimated variance (volatility) of the PM2.5 level at time $t$.
-* **$\omega$:** The baseline variance, representing the long-term average background noise of the data.
-* **$\epsilon^2_{t-1}$:** Information regarding the **prediction error** from the previous time step (squared). This captures the impact of recent "shocks" or unexpected spikes.
-* **$\sigma^2_{t-1}$:** Information regarding the **variance** from the previous time step. This captures the "persistence" of volatility (i.e., if it was volatile yesterday, it is likely to be volatile today).
-* **$\alpha$:** A weighting coefficient that determines how sensitive the model is to recent errors.
-* **$\beta$:** A weighting coefficient that determines how strongly past volatility affects current volatility.
+* **$\sigma^2_t$ (Current Uncertainty)**: The predicted "margin of error" or volatility at time $t$.
+* **$\omega$ (Background Noise)**: The long-term average air quality variation.
+* **$\epsilon^2_{t-1}$ (Recent Shocks)**: How much the model was "surprised" by unexpected spikes in the previous hour.
+* **$\sigma^2_{t-1}$ (Risk Persistence)**: The tendency for high-risk, volatile conditions to linger over time.
 
 **Model Specification:**
+We estimate the current uncertainty level as follows:
+$$\sigma^2_t = \omega + \alpha \epsilon^2_{t-1} + \beta \sigma^2_{t-1}$$
 
-We estimate the current uncertainty using the following formula:
-$$
-\sigma^2_t = \omega + \alpha \epsilon^2_{t-1} + \beta \sigma^2_{t-1}
-$$
+### Decision Logic (Warning System)
+To decide whether to issue a warning, we calculate the probability that the true PM2.5 value will exceed our safety limit.
 
-**Decision Logic (Warning System):**
-
-To determine if a warning is necessary, we calculate the probability that the true PM2.5 value will exceed the safety threshold.
-
-1.  **Safety Threshold:** We use **15** as the critical PM2.5 limit, based on BC government guidelines for sensitive groups (e.g., asthma patients).
-2.  **Standardization (Z-Score):** We measure how far the threshold (15) is from our predicted mean ($\hat{PM}_t$), normalized by our predicted volatility ($\sigma_t$).
-    $$
-    Z = \frac{15 - \hat{PM}_t}{\sigma_t}
-    $$
-3.  **Risk Probability:** We calculate the probability that the actual value is greater than 15, derived from the standard normal distribution: $P(\text{True Value} > 15)$.
-4.  **Final Decision:** Through our empirical research, we determined that a probability greater than **0.35 (35%)** indicates a significant risk.
-    * **If Probability > 0.35:** Issue Warning (Unsafe).
-    * **If Probability $\le$ 0.35:** No Warning (Safe).
+1.  **Safety Threshold**: Set at **15**, aligned with WHO guidelines[[3]](#ref-3) for sensitive groups.
+2.  **Safety Buffer ($Z$-Score)**: We calculate a $Z$-score to measure how many "units of risk" ($\sigma_t$) our predicted mean ($\hat{PM}_t$) is away from the threshold:
+    $$Z = \frac{15 - \hat{PM}_t}{\sigma_t}$$
+3.  **Probability Mapping**: Using the **Normal Distribution** (a standard statistical framework), we convert this buffer into an exact probability. A small buffer relative to current volatility indicates a high probability of exceeding the limit.
+4. **Final Decision**: We issue a **Warning (Unsafe)** if the calculated probability of exceeding the threshold is greater than **35%**, where 35% represents our chosen and acceptable risk tolerance that optimizes the model.
 
 ## Baseline Model
-
-To rigorously evaluate our performance, we established a **Baseline Model** for comparison. This simple heuristic predicts the next 3-hour PM2.5 value by simply taking the **maximum PM2.5 value observed in the past 3 hours**. We use this to verify that our advanced models (GAM + GARCH) are actually learning complex patterns rather than just memorizing recent data. We focus heavily on comparing the classification performance against this baseline, as the ability to correctly trigger warnings impacts downstream decision-making more directly than raw numerical accuracy.
+To rigorously evaluate our performance and demonstrate the value added by our analysis, we established a **Baseline Model** for comparison. This simple heuristic predicts the future value by taking the **maximum value observed in the past 3 hours**. This comparison verifies that our advanced GAM + GARCH framework is capturing complex temporal patterns rather than just reacting to the most recent data point.
 
 ## Define Metrics
 
 ### Regression Metrics
-
 For the numerical forecasting component, we assess performance using:
 
 1.  **RMSE (Root Mean Squared Error):** This measures the average magnitude of the error (bias) between our predicted value and the true value.
+
 2.  **$R^2$ (Coefficient of Determination):** Ranging from 0 to 1, this metric indicates how well our model captures the *variation* in the data. A score of 1 implies the model perfectly captures the patterns, ensuring it is not just guessing based on the average.
 
-### Classification Metrics
-
+### Classification Metrics (Decision Quality)
 For the decision-support component, accuracy alone can be misleading (e.g., a model could achieve high accuracy by never issuing a warning if "unsafe" days are rare). Therefore, we use metrics that reflect real-world consequences:
 
 * **Recall:** Measures our ability to detect *all* unsafe events (minimizing false safety). This protects public health.
+
 * **Precision:** Measures the trustworthiness of our warnings (minimizing false alarms). This prevents "warning fatigue."
+
 * **F1 Score:** Since we need to balance public protection (Recall) with system credibility (Precision), we rely on the F1 Score, which is the harmonic mean of both metrics, to provide a single, balanced view of performance.
 
 # Results & Business Value
 
 ## Performance Evaluation: Model vs. Baseline
-Our analysis across six representative regions validates that the proposed system accurately mirrors real-world air quality patterns, providing a reliable foundation for public health decision-making. As shown in the detailed regional summaries in the Appendix, the model effectively captures both short-term 13-day fluctuations and consistent 24-hour daily cycles across diverse geographic profiles. This dual-layered accuracy ensures the system remains robust under varying environmental conditions.
+Our analysis across six representative regions validates that the proposed system accurately reflects real-world air quality patterns, providing a reliable foundation for public health decision-making. As shown in the detailed regional summaries in the Appendix (\ref{fig:gam-central-interior}, \ref{fig:gam-coastal}, \ref{fig:gam-georgia-strait}, \ref{fig:gam-lower-fraser-valley}, \ref{fig:gam-northeast}, \ref{fig:gam-southern-interior}), the model effectively captures both short-term 13-day fluctuations (top-left subfigure within each figure) and consistent 24-hour daily cycles throughout the year (bottom-right subfigure within each figure) across diverse geographic profiles. This dual-layer accuracy ensures that the system remains robust under varying environmental conditions.
 
-To demonstrate the value added to our current operations, we compared our model against the existing baseline using three management-focused pillars: **Trust (Precision)**, **Safety (Recall)**, and **Operational Balance (F1-Score)**. The table below summarizes the average performance across all six tested locations:
+To demonstrate the value added to our current operations, we compared our model against the existing baseline using three management-focused pillars: **Trust (Precision)**, **Safety (Recall)**, and **Operational Balance (F1-Score)**. The table below (@tbl-performance-comparison) summarizes the average performance across all six tested locations:
 
 | Metric | GAM-GARCH Model (Avg) | Naive Max3 Baseline (Avg) | Improvement |
 | :--- | :--- | :--- | :--- |
 | **F1-Score (Balance)** | **74.7%** | 70.4% | **+4.3%** |
 | **Precision (Trust)** | **72.6%** | 60.9% | **+11.7%** |
 | **Recall (Safety)** | 73.5% | 78.3% | -4.8%* |
+
+: Average Classification Performance Comparison (GAM-GARCH vs. Naive Max3) {#tbl-performance-comparison}
+
+(See Appendix for detailed six regional separately performance @tbl-accuracy, @tbl-f1, @tbl-recall, @tbl-precision)
 
 The most significant strategic gain is the **11.7% improvement in Precision**. For our organization, this directly translates to higher credibility and a substantial reduction in false alarms that often lead to "alert fatigue" and public distrust. While there is a marginal 4.8% decrease in Recall—meaning some events may not trigger an immediate early alert—the overall improvement in the balanced F1-Score confirms that our model provides a more stable and professional framework for regional air quality management.
 
@@ -238,57 +201,165 @@ Now that we have successfully proven the concept, the next step involves transit
 
 \newpage
 
-# Appendix, Repository, Appendix and References {-}
+# Acknowledgments, Repository, References, \& Appendix {-}
 ## Acknowledgments {-}
 
 This report was prepared for **STAT 946: Case Studies in Data Science** at the **University of Waterloo**. We thank **Professor Martin Lysy** and **TA Daniel Zhang** for their guidance. While generative AI tools were used for grammar refinement and code debugging, all project ideas, decisions, and interpretations were made by the authors.
 
 ## Repository {-}
 
-* **GitHub Repository:** [Data-Science-Case-Study-1 Repository](https://github.com/ChiehAnChang/Data-Science-Case-Study-1)
-* **Marking Branch:**  Please refer to the **release branch** for the final version of the code and report.
+* **GitHub Repository:** **[Data-Science-Case-Study-1 Repository](https://github.com/ChiehAnChang/Data-Science-Case-Study-1)**
+* **Marking Branch:** Please refer to the **[release branch](https://github.com/ChiehAnChang/Data-Science-Case-Study-1/tree/release)** for the final version of the code and report.
 
-## Appendix: {-}
-### EDA Figures: {-}
-![placeholder](../Assets/Outputs/EDA/image/eda_micro_analysis_daily_weekly_patterns.png)
+## References {-}
+\begin{enumerate}
+    \item \label{ref-1} Public Health Agency of Canada. (2024). \textit{Canadian Chronic Disease Surveillance System (CCDSS) Data Tool 2000–2022}. Government of Canada. \url{https://health-infobase.canada.ca/ccdss/data-tool/}
+    \item \label{ref-2} Environmental Reporting BC. (2025, July). *Status of fine particulate matter in B.C. (2020-2022)*. British Columbia Ministry of Environment and Parks. \url{https://www.env.gov.bc.ca/soe/indicators/air/fine-pm.html}
+    \item \label{ref-3} C40 Knowledge Hub. (n.d.). WHO air quality guidelines. \url{https://www.c40knowledgehub.org/s/article/WHO-Air-Quality-Guidelines?language=en_US}
+\end{enumerate}
 
-![placeholder](../Assets/Outputs/EDA/image/eda_act2_monthly_yearly_patterns.png)
+\clearpage
+\appendix
 
-![placeholder](../Assets/Outputs/EDA/image/eda_act2_long_term_timeline_seasons.png)
+\renewcommand{\thefigure}{A.\arabic{figure}} 
+\renewcommand{\theHfigure}{AppendixFigure\arabic{figure}} 
+\setcounter{figure}{0}
 
-![placeholder](../Assets/Outputs/EDA/image/eda_station_corr_heatmap_before_grouping.png)
+\renewcommand{\thetable}{A.\arabic{table}} 
+\renewcommand{\theHtable}{AppendixTable\arabic{table}} 
+\setcounter{table}{0}
 
-![placeholder](../Assets/Outputs/EDA/image/bc_air_zones_station_network_corrected.png)
+## Appendix {-}
 
-![placeholder](../Assets/Outputs/EDA/image/eda_station_corr_heatmap_grouped_by_air_zone.png)
+### EDA Figures {-}
 
-![placeholder](../Assets/Outputs/EDA/image/eda_zone_act1_1_daily_rhythm.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_micro_analysis_daily_weekly_patterns.png}
+\caption{Micro Analysis: Daily and Weekly Patterns}
+\label{fig:daily-rhythm}
+\end{figure}
 
-![placeholder](../Assets/Outputs/EDA/image/eda_zone_act1_2_weekday_weekend_facets.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_act2_monthly_yearly_patterns.png}
+\caption{Monthly and Yearly Patterns}
+\label{fig:annual-trends}
+\end{figure}
 
-![placeholder](../Assets/Outputs/EDA/image/eda_zone_act1_3_weekly_accumulation.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_act2_long_term_timeline_seasons.png}
+\caption{Long Term Timeline Seasons}
+\label{fig:long-term-timeline}
+\end{figure}
 
-![placeholder](../Assets/Outputs/EDA/image/eda_zone_act2_4_monthly_seasonality.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_station_corr_heatmap_before_grouping.png}
+\caption{Station Correlation Heatmap (Before Grouping)}
+\label{fig:corr-before}
+\end{figure}
 
-![placeholder](../Assets/Outputs/EDA/image/eda_zone_act2_5_yoy_volatility_facets.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_station_corr_heatmap_grouped_by_air_zone.png}
+\caption{Station Correlation Heatmap (Grouped by Air Zone)}
+\label{fig:correlation-grouped}
+\end{figure}
 
-### Model Performance: {-}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/bc_air_zones_station_network_corrected.png}
+\caption{BC Air Zones Station Network}
+\label{fig:map}
+\end{figure}
 
-### Numerical Prediction Results Figures: {-}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_zone_act2_4_monthly_seasonality.png}
+\caption{Regional Monthly Seasonality}
+\label{fig:regional-volatility}
+\end{figure}
 
-![Central Interior Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Central Interior_Test2025.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_zone_act1_1_daily_rhythm.png}
+\caption{Group Daily Rhythm Zone}
+\label{fig:group-daily-rhythm-zone}
+\end{figure}
 
-![Coastal Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Coastal_Test2025.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_zone_act1_2_weekday_weekend_facets.png}
+\caption{Group Weekday Weekend Facets}
+\label{fig:group-weekday-weekend-facets}
+\end{figure}
 
-![Georgia Strait Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Georgia Strait_Test2025.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_zone_act1_3_weekly_accumulation.png}
+\caption{Group Weekly Accumulation}
+\label{fig:group-weekly-accumulation}
+\end{figure}
 
-![Lower Fraser Valley Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Lower Fraser Valley_Test2025.png)
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/EDA/image/eda_zone_act2_5_yoy_volatility_facets.png}
+\caption{Group YoY Volatility Facets}
+\label{fig:group-yoy-volatility-facets}
+\end{figure}
 
-![Northeast Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Northeast_Test2025.png)
+### Model Performance  {-}
 
-![Southern Interior Performance Summary](../Assets/Outputs/Model/image/GAM_NoSave_Southern Interior_Test2025.png)
+### Numerical Prediction Results Figures   {-}
 
-### Classification Performance by Metric {-}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/Model/image/GAM_NoSave_Central Interior_Test2025.png}
+\caption{Central Interior Performance Summary}
+\label{fig:gam-central-interior}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/Model/image/GAM_NoSave_Coastal_Test2025.png}
+\caption{Coastal Performance Summary}
+\label{fig:gam-coastal}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/Model/image/GAM_NoSave_Georgia Strait_Test2025.png}
+\caption{Georgia Strait Performance Summary}
+\label{fig:gam-georgia-strait}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/Model/image/GAM_NoSave_Lower Fraser Valley_Test2025.png}
+\caption{Lower Fraser Valley Performance Summary}
+\label{fig:gam-lower-fraser-valley}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/Model/image/GAM_NoSave_Northeast_Test2025.png}
+\caption{Northeast Performance Summary}
+\label{fig:gam-northeast}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{../Assets/Outputs/Model/image/GAM_NoSave_Southern Interior_Test2025.png}
+\caption{Southern Interior Performance Summary}
+\label{fig:gam-southern-interior}
+\end{figure}
+
+\newpage
+### Classification Performance by Metric  {-}
+
+The following tables present the detailed performance metrics for each region.
 
 | Region | Accuracy | Difference in Accuracy (Our model - Baseline) |
 | :--- | :---: | :---: |
@@ -333,12 +404,3 @@ This report was prepared for **STAT 946: Case Studies in Data Science** at the *
 | Lower Fraser Valley | 0.583 | -0.019 |
 
 : Precision Performance {#tbl-precision}
-
-
-\newpage 
-
-## References {-}
-
-\begin{enumerate}
-    \item \label{ref-1} Public Health Agency of Canada. (2024). \textit{Canadian Chronic Disease Surveillance System (CCDSS) Data Tool 2000–2022}. Government of Canada. \url{https://health-infobase.canada.ca/ccdss/data-tool/}
-\end{enumerate}
