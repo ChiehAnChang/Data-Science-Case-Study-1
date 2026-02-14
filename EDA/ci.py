@@ -33,4 +33,21 @@ if missing:
         print(f"  - {f}")
     sys.exit(1)
 
-print(f"All {len(EDA_EXPECTED_FIGURES)} figures present in {EDA_FIGURES_DIR}")
+print(f"All {len(EDA_EXPECTED_FIGURES)} EDA figures present in {EDA_FIGURES_DIR}")
+
+# -------------
+Model_FIGURES_DIR = Path(__file__).resolve().parents[1] / "Assets" / "Outputs" / "Model" / "image"
+
+Model_EXPECTED_FIGURES = [
+]
+
+missing = [f for f in Model_EXPECTED_FIGURES if not (Model_FIGURES_DIR / f).exists()]
+
+if missing:
+    print(f"ERROR: {len(missing)} figure(s) missing from {Model_FIGURES_DIR}:")
+    for f in missing:
+        print(f"  - {f}")
+    sys.exit(1)
+
+
+print(f"All {len(Model_EXPECTED_FIGURES)} Model figures present in {Model_FIGURES_DIR}")
