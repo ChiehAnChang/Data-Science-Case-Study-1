@@ -31,7 +31,7 @@ format:
 
 \tableofcontents
 
-# Mandatory Context {-}
+# Mandatory Context: {-}
 
 We are the **Public Health Data Science Division** of British Columbia, mandated to monitor environmental risks that threaten public safety. Our team reports to the **Environmental Health Director**, who holds the authority to issue provincial air quality advisories and health alerts.
 
@@ -60,18 +60,20 @@ We benchmarked this model against the standard "Naive Max3" baseline (alerting i
 **Recommendations**
 We recommend deploying this automated framework to replace manual monitoring. By providing a reliable 3-hour lead time, this system will allow the Directorate to coordinate hospital staffing and advisory releases more effectively, shifting our operational stance from reactive to proactive.
 
-# Background & Research Question
+# 1. Background & Research Question
 
-In recent years, residents of British Columbia have experienced increasingly severe air quality conditions during the summer months, largely due to the growing frequency and intensity of wildfires. These wildfire events significantly elevate particulate matter concentrations, particularly PM2.5, which poses serious health risks.
+In recent years, residents of British Columbia have experienced increasingly severe air quality conditions during the summer months, largely due to the growing frequency and intensity of wildfires. These wildfire events significantly elevate particulate matter concentrations—particularly **PM2.5**—which poses serious risks to public health.
 
-At the same time, the crude prevalence rate of asthma in British Columbia has increased substantially. In 2000, approximately 5.25% of the provincial population was diagnosed with asthma. More recently, this figure has risen to approximately 9.88%, nearly doubling over two decades. In terms of population counts, the number of individuals living with asthma increased from 212,588 to 561,500, representing an increase of 348,912 cases over 20 years. On average, this corresponds to roughly 17,445 additional asthma cases per year.
+Simultaneously, the crude prevalence rate of asthma in British Columbia has increased substantially. In 2000, approximately **5.25%** of the provincial population was diagnosed with asthma. More recently, this figure has risen to approximately **9.88%**, nearly doubling over two decades. In terms of population counts, the number of individuals living with asthma increased from 212,588 to 561,500, representing an increase of **348,912 cases** over 20 years. On average, this corresponds to roughly 17,445 additional asthma cases per year.
+
+
 
 Poor air quality is widely recognized as a contributing factor to respiratory conditions, including asthma. PM2.5, which can originate from vehicle emissions, industrial activity, and especially wildfire smoke, is small enough to penetrate deep into the lungs and trigger or worsen respiratory illness. During wildfire seasons, PM2.5 concentrations can rise sharply over short periods of time, increasing the risk of acute respiratory events and hospital admissions.
 
-Given these public health concerns, this report focuses on analyzing PM2.5 patterns across British Columbia and developing a short-term forecasting model to predict changes in PM2.5 levels over the next three hours.
+Given these public health concerns, this report focuses on analyzing PM2.5 patterns across British Columbia. Specifically, this analysis evaluates the statistical feasibility of leveraging historical air quality data to develop a predictive framework for short-term PM2.5 fluctuations.
 
 **Research Question:**
-Can we develop a reliable short-term forecasting model that predicts PM2.5 levels three hours in advance to support timely public health warnings and operational preparedness?
+*To what extent can a statistically-driven short-term forecasting model provide reliable predictions of PM2.5 levels to support timely public health warnings and operational preparedness?*
 
 By providing early warning signals, the model aims to support government decision-making and enable hospitals to prepare necessary equipment and staffing resources in advance. From a public policy perspective, improved forecasting may reduce health risks and potentially save lives. From a healthcare operations perspective, it can improve resource allocation, reduce emergency congestion, and enhance the overall quality of patient care.
 
