@@ -45,6 +45,18 @@ Model_EXPECTED_FIGURES = [
     "GAM_NoSave_Lower Fraser Valley_Test2025.png",
     "GAM_NoSave_Northeast_Test2025.png",
     "GAM_NoSave_Southern Interior_Test2025.png",
+    "Pipeline_Central Interior_ConfusionMatrix.png",
+    "Pipeline_Central Interior_DetailPlot.png",
+    "Pipeline_Coastal_ConfusionMatrix.png",
+    "Pipeline_Coastal_DetailPlot.png",
+    "Pipeline_Georgia Strait_ConfusionMatrix.png",
+    "Pipeline_Georgia Strait_DetailPlot.png",
+    "Pipeline_Lower Fraser Valley_ConfusionMatrix.png",
+    "Pipeline_Lower Fraser Valley_DetailPlot.png",
+    "Pipeline_Northeast_ConfusionMatrix.png",
+    "Pipeline_Northeast_DetailPlot.png",
+    "Pipeline_Southern Interior_ConfusionMatrix.png",
+    "Pipeline_Southern Interior_DetailPlot.png",
 ]
 
 missing = [f for f in Model_EXPECTED_FIGURES if not (Model_FIGURES_DIR / f).exists()]
