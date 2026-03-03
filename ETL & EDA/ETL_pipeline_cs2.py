@@ -21,7 +21,7 @@ Dataset/Outputs/CS2_model_input.csv
     Hourly long-format table (Datetime_UTC × Zone) ready for modelling, with:
       - PM2.5 (zone-median, imputed by CS1)
       - Local wildfire signals  (fires inside zone polygon)
-      - Regional wildfire signals (IDW within 300 km of zone centroid)
+      - Regional wildfire signals (IDW within 300 km of zone polygon boundary)
       - PM2.5 lag / rolling features
       - Fire rolling features
       - Calendar / season features
@@ -30,7 +30,7 @@ Dataset/Outputs/CS2_model_input.csv
 Design Decisions
 ----------------
 Alert threshold  : 25 µg/m³  — BC regulatory advisory standard
-IDW radius       : 300 km    — captures cross-zone smoke transport
+IDW radius       : 300 km    — captures cross-zone smoke transport (measured from zone polygon boundary, not centroid)
 Timezone         : UTC throughout; PM2.5 shifted +8 h from PST (fixed, no DST)
 Wildfire signals : FRP (satellite-measured), HFI (modelled intensity), FWI (weather index)
 """
@@ -60,37 +60,6 @@ WILDFIRE_YEARS  = [2022, 2023, 2024, 2025]
 # BC geographic bounding box — fast pre-filter before spatial ops
 BC_LAT = (48.3, 60.0)
 BC_LON = (-139.0, -114.0)
-
-
-# ── Helper: vectorised Haversine ───────────────────────────────────────────
-def haversine_km(
-    lat1: float, lon1: float,
-    lat2: np.ndarray, lon2: np.ndarray,
-) -> np.ndarray:
-    """
-    Great-circle distance (km) from one reference point to an array of points.
-
-    Parameters
-    ----------
-    lat1, lon1 : scalar  — reference point (zone centroid), decimal degrees
-    lat2, lon2 : array   — target points  (hotspot coords),  decimal degrees
-
-    Returns
-    -------
-    np.ndarray of distances in km.
-    """
-    R = 6371.0
-    lat1r, lon1r = np.radians(lat1), np.radians(lon1)
-    lat2r = np.radians(np.asarray(lat2, dtype=float))
-    lon2r = np.radians(np.asarray(lon2, dtype=float))
-
-    dlat = lat2r - lat1r
-    dlon = lon2r - lon1r
-    a = (
-        np.sin(dlat / 2) ** 2
-        + np.cos(lat1r) * np.cos(lat2r) * np.sin(dlon / 2) ** 2
-    )
-    return R * 2 * np.arcsin(np.sqrt(np.clip(a, 0, 1)))
 
 
 # ── Step 1: Load wildfire hotspot data ─────────────────────────────────────
@@ -141,17 +110,17 @@ def load_wildfire_data() -> pd.DataFrame:
     return df_bc.reset_index(drop=True)
 
 
-# ── Step 2: Zone centroids from GeoJSON ────────────────────────────────────
-def get_zone_centroids(geojson_path: Path) -> dict:
+# ── Step 2: Zone polygons from GeoJSON ─────────────────────────────────────
+def get_zone_geometries(geojson_path: Path) -> dict:
     """
-    Compute the WGS-84 centroid (lat, lon) for each target zone using the
-    same BC air-zone GeoJSON used in CS1.
+    Load and dissolve the BC air-zone polygon for each target zone, projected
+    to EPSG:3005 (BC Albers) for accurate planar distance calculations.
 
     Returns
     -------
-    dict : { zone_name : (centroid_lat, centroid_lon) }
+    dict : { zone_name : shapely geometry (EPSG:3005) }
     """
-    gdf = gpd.read_file(geojson_path).to_crs(epsg=4326)
+    gdf = gpd.read_file(geojson_path).to_crs(epsg=3005)
 
     # Identify zone-name column (mirrors CS1 logic)
     candidates = [c for c in gdf.columns if "zone" in c.lower() or "name" in c.lower()]
@@ -159,7 +128,7 @@ def get_zone_centroids(geojson_path: Path) -> dict:
         raise ValueError(f"Cannot find zone/name column in: {list(gdf.columns)}")
     gdf["ZoneName"] = gdf[candidates[0]]
 
-    centroids = {}
+    geometries = {}
     for zone in TARGET_ZONES:
         rows = gdf[gdf["ZoneName"] == zone]
         if rows.empty:
@@ -167,50 +136,58 @@ def get_zone_centroids(geojson_path: Path) -> dict:
                 f"Zone '{zone}' not found in GeoJSON. "
                 f"Available: {sorted(gdf['ZoneName'].unique())}"
             )
-        # Dissolve multi-polygon zones before computing centroid
         try:
             union = rows.geometry.union_all()
         except AttributeError:
             # geopandas < 0.14 fallback
             union = rows.geometry.unary_union
-        point = union.centroid
-        centroids[zone] = (point.y, point.x)
-        print(f"  {zone}: centroid = ({point.y:.4f}°N, {point.x:.4f}°E)")
+        geometries[zone] = union
+        print(f"  {zone}: polygon loaded ({len(rows)} feature(s))")
 
-    return centroids
+    return geometries
 
 
 # ── Step 3: Tag each hotspot with zone proximity ───────────────────────────
-def tag_proximity(df_fire: pd.DataFrame, centroids: dict) -> pd.DataFrame:
+def tag_proximity(df_fire: pd.DataFrame, zone_geometries: dict) -> pd.DataFrame:
     """
-    For each target zone, compute Haversine distance (km) from every BC
-    hotspot to the zone centroid and derive an IDW weight (1 / dist²).
+    For each target zone, compute the shortest distance (km) from every BC
+    hotspot to the zone polygon boundary and derive an IDW weight (1 / dist²).
+
+    Distance is measured in EPSG:3005 (BC Albers, metres) and converted to km.
+    Fires inside the zone have distance = 0; a minimum of 0.1 km is applied
+    before computing IDW weights to prevent division-by-zero.
 
     Columns added per zone:
-        dist_<zone>   — distance in km
-        weight_<zone> — IDW weight = 1 / dist²  (used for regional signal)
+        dist_<zone>   — shortest distance to zone polygon in km
+        weight_<zone> — IDW weight = 1 / max(dist, 0.1)²
 
-    Rows farther than MAX_DIST_KM from BOTH zone centroids are dropped —
+    Rows farther than MAX_DIST_KM from BOTH zone polygons are dropped —
     they cannot contribute to either zone's signal.
     """
-    df = df_fire.copy()
+    # Project hotspots to EPSG:3005 for planar distance measurement in metres
+    gdf_fire = gpd.GeoDataFrame(
+        df_fire.copy(),
+        geometry=gpd.points_from_xy(df_fire["lon"], df_fire["lat"]),
+        crs="EPSG:4326",
+    ).to_crs(epsg=3005)
 
-    for zone, (clat, clon) in centroids.items():
-        dist = haversine_km(clat, clon, df["lat"].values, df["lon"].values)
-        df[f"dist_{zone}"]   = dist
-        # Clip to 0.1 km minimum to prevent division-by-zero at centroid
-        df[f"weight_{zone}"] = 1.0 / (np.maximum(dist, 0.1) ** 2)
+    for zone, zone_geom in zone_geometries.items():
+        dist_km = gdf_fire.geometry.distance(zone_geom) / 1000.0
+        gdf_fire[f"dist_{zone}"]   = dist_km.values
+        gdf_fire[f"weight_{zone}"] = 1.0 / (np.maximum(dist_km.values, 0.1) ** 2)
+
+    df = pd.DataFrame(gdf_fire.drop(columns="geometry"))
 
     # Keep hotspots within MAX_DIST_KM of at least one target zone
     within = np.zeros(len(df), dtype=bool)
-    for zone in centroids:
+    for zone in zone_geometries:
         within |= df[f"dist_{zone}"] <= MAX_DIST_KM
 
     before = len(df)
     df = df[within].copy().reset_index(drop=True)
     print(
         f"  Retained {len(df):,} / {before:,} hotspots "
-        f"within {MAX_DIST_KM:.0f} km of target zones"
+        f"within {MAX_DIST_KM:.0f} km of target zone polygons"
     )
     return df
 
@@ -263,7 +240,7 @@ def aggregate_to_hourly(df_fire: pd.DataFrame) -> pd.DataFrame:
 
     For each zone the following signals are computed:
 
-    Regional (all hotspots within MAX_DIST_KM of zone centroid):
+    Regional (all hotspots within MAX_DIST_KM of zone polygon boundary):
         fire_count_regional  — number of satellite detections
         frp_regional_sum     — total Fire Radiative Power (MW)
         hfi_weighted         — Σ(hfi × 1/dist²)  IDW intensity signal
@@ -522,13 +499,13 @@ if __name__ == "__main__":
     print("\n[1/8] Loading wildfire hotspot data ...")
     df_fire = load_wildfire_data()
 
-    # 2. Zone centroids
-    print("\n[2/8] Computing zone centroids from GeoJSON ...")
-    centroids = get_zone_centroids(GEOJSON_PATH)
+    # 2. Zone polygons
+    print("\n[2/8] Loading zone polygons from GeoJSON ...")
+    zone_geometries = get_zone_geometries(GEOJSON_PATH)
 
-    # 3. Proximity tagging (Haversine distances + IDW weights)
+    # 3. Proximity tagging (polygon boundary distances + IDW weights)
     print("\n[3/8] Tagging hotspot proximity to target zones ...")
-    df_fire = tag_proximity(df_fire, centroids)
+    df_fire = tag_proximity(df_fire, zone_geometries)
 
     # 4. Local fire tagging (spatial join with zone polygons)
     print("\n[4/8] Spatial join: identifying fires inside zone polygons ...")
