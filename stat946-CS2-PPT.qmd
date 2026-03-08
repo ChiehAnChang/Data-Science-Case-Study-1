@@ -148,3 +148,44 @@ This avoids mixing **regional wildfire patterns**.
 Model predictions follow **PM2.5 trends in the unseen test year**, demonstrating generalization to new wildfire seasons.
 
 ------------------------------------------------------------------------
+
+## 10. Main performance comparison
+
+| Zone                | model       | Precision@25 | Recall@25 | F1@25 | F2@25 |
+|---------------------|-------------|--------------|-----------|-------|-------|
+| Lower Fraser Valley | baseline    |        0.500 |     0.538 | 0.518 |       |
+|                     | Transformer | 0.538        | 0.538     | 0.538 | 0.538 |
+| Southern Interior   | baseline    |        0.945 |     0.896 | 0.920 |       |
+|                     | Transformer | 0.945        | 0.888     | 0.916 | 0.899 |
+
+- Model performance differed sharply by air zone.
+
+- Southern Interior performed strongly: Precision 0.945, Recall 0.888, F1 0.916, F2 0.899.
+
+- Lower Fraser Valley performed much worse: all key metrics were 0.538.
+
+- Overall, the model appears reliable in the Southern Interior but much less dependable in the Lower Fraser Valley.
+
+------------------------------------------------------------------------
+
+## 11. Diagnostics and air-zone comparison
+
+- Diagnostics show that performance is highly region-dependent.
+
+- The Southern Interior appears to have clearer or more stable event patterns, which the model captured well.
+
+- The Lower Fraser Valley appears to be a more difficult forecasting environment, leading to weaker warning performance.
+
+- This comparison shows why zone-level evaluation matters: overall results alone would hide important regional differences.
+
+------------------------------------------------------------------------
+
+## 12. Limitations, uncertainty, and final takeaways
+
+- Results should be interpreted with caution because performance is not consistent across air zones.
+
+- The weaker Lower Fraser Valley results indicate greater uncertainty and a higher risk of unreliable warnings.
+
+- The approach shows clear promise, especially for the Southern Interior.
+
+- Main takeaway: the model has value, but further refinement and zone-specific tuning are needed before broader operational use.
