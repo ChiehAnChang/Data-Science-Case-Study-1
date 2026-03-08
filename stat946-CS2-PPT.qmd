@@ -7,6 +7,61 @@ format:
     slide-level: 2
 ---
 
+## Model Selection Process
+
+### From baseline GAM to Transformer
+
+| Model | Improves | Still limited by |
+|:---|:---|:---|
+| **GAM (baseline)** | Nonlinear structure | Manual features, weak sequence modeling |
+| **Light GBM** | identify useful predictors for Nonlinear tabular learning | Limited time-series handling |
+| **LSTM + Autoencoder** | Sequence learning + feature compression | Slow sequential training |
+
+\vspace{0.15cm}
+
+**Therefore, we chose Transformer:**
+Captures temporal dependence more flexibly and supports parallel training.
+
+## Transformer Advantages and Trade-offs
+
+::: {.columns}
+::: {.column width="50%"}
+
+### Why Transformer
+
+- **Sequence-aware**
+  models historical PM2.5 patterns directly
+
+- **Long-range dependence**
+  can connect distant time steps more effectively
+
+- **Flexible representation**
+  captures nonlinear temporal structure
+
+- **Parallel training**
+  more scalable than recurrent models
+
+:::
+
+::: {.column width="50%"}
+
+### Trade-offs
+
+- **Higher compute cost**
+  larger and more complex than GAM
+
+- **More tuning required**
+  architecture and optimization settings matter
+
+- **Lower interpretability**
+  harder to explain than smooth GAM effects
+
+- **Overfitting risk**
+  requires careful validation and regularization
+
+:::
+:::
+
 ## Model Architecture and Design Choice
 
 ### Transformer Model Structure
