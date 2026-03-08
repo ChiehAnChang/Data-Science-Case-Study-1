@@ -1,0 +1,13 @@
+# Large dataset files
+Dataset/Outputs/*.npz
+Dataset/Outputs/*.csv
+Dataset/Outputs/syn_models/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+.venv/
+
+# IDE
+.idea/
