@@ -1,5 +1,6 @@
 ---
-title: "Wildfire Smoke Prediction"
+title: "Wildfire Smoke & PM2.5 Forecasting"
+subtitle: "CS2: Transformer-Based Air Quality Prediction"
 format:
   beamer:
     theme: Madrid
@@ -7,60 +8,107 @@ format:
     slide-level: 2
 ---
 
-## Model Selection Process
+## Why PM2.5 Forecasting Matters
 
-### From baseline GAM to Transformer
+### Motivation
 
-| Model | Improves | Still limited by |
-|:---|:---|:---|
-| **GAM (baseline)** | Nonlinear structure | Manual features, weak sequence modeling |
-| **Light GBM** | identify useful predictors for Nonlinear tabular learning | Limited time-series handling |
-| **LSTM + Autoencoder** | Sequence learning + feature compression | Slow sequential training |
+The asthma rate in the BC area has nearly doubled, rising from 5.25% to 9.88%.
 
-\vspace{0.15cm}
+### Primary Stakeholder
 
-**Therefore, we chose Transformer:**
-Captures temporal dependence more flexibly and supports parallel training.
+Environmental Health Director — responsible for timely, defensible air-quality advisories used across provincial partners.
 
-## Transformer Advantages and Trade-offs
+------------------------------------------------------------------------
 
-::: {.columns}
+## CS1 Limitations and CS2 Objectives
+
+### CS1 Limitations
+
+-   Relied on historical PM2.5 patterns; using too few features risks over-reliance on a single factor.
+-   Lacked short- and long-term memory, which is problematic for time-series data.
+-   The model was too conservative, causing it to miss rapid, non-linear spikes (notably from wildfire smoke).
+
+### CS2 Objectives
+
+-   Expand the feature set to capture environmental complexity.
+-   Incorporate memory into the model to better handle time-series dynamics.
+-   Improve the model's sensitivity so it is less conservative during extreme events.
+
+------------------------------------------------------------------------
+
+## Data Pipeline and Feature Engineering
+
+::::: columns
 ::: {.column width="50%"}
 
-### Why Transformer
+**Two data sources (2022–2025):**
 
-- **Sequence-aware**
-  models historical PM2.5 patterns directly
+-   **PM2.5** — CS1 pipeline (BC AQMS, zone-median, hourly, PST → UTC +8h)
+-   **Wildfire** — CWFIS satellite hotspots (MODIS/VIIRS, UTC)
 
-- **Long-range dependence**
-  can connect distant time steps more effectively
+**Key design decisions:**
 
-- **Flexible representation**
-  captures nonlinear temporal structure
-
-- **Parallel training**
-  more scalable than recurrent models
+-   Zone **polygon boundary** distance, not centroid
+-   **300 km** regional radius — cross-zone smoke transport
+-   IDW weighting ($1/d^2$) — closer fires weighted more
+-   Non-fire hours **zero-filled**, not missing
 
 :::
 
 ::: {.column width="50%"}
 
-### Trade-offs
+**Wildfire signals:**
 
-- **Higher compute cost**
-  larger and more complex than GAM
+-   `fire_count`, `frp_sum` (local & regional)
+-   `hfi_weighted`, `fwi_mean`
 
-- **More tuning required**
-  architecture and optimization settings matter
+**Engineered features:**
 
-- **Lower interpretability**
-  harder to explain than smooth GAM effects
-
-- **Overfitting risk**
-  requires careful validation and regularization
+| Feature | Values |
+|:--------|:-------|
+| PM2.5 lags | 1h, 6h, 24h, 48h |
+| Rolling | 24h mean/max, 7d mean |
+| Fire rolling | frp 24h/72h sum |
+| Calendar | hour, dow, month, season |
 
 :::
+:::::
+
+------------------------------------------------------------------------
+
+## Data Structure and Modeling Assumptions
+
+::::: columns
+::: {.column width="50%"}
+
+**Data Structure:**
+
+-   70,128 rows × 11 features, 2 zones, hourly UTC
+-   Sliding window: $X = (N,\ 72,\ 11)$, $y =$ PM2.5 at $t+3$
+-   Temporal split — Train: 2022–2024 \quad Test: 2025
+
+\vspace{0.3cm}
+
+**Data Augmentation:**
+
+-   **PCHIP interpolation** — upsample hourly → 30-min
+-   Doubles training sequences; smoother PM2.5 transitions
+-   *Assumption: more data improves model generalization*
+
 :::
+
+::: {.column width="50%"}
+
+**Data Assumptions:**
+
+1.  **Wildfire drives PM2.5** — spikes in BC air quality are primarily caused by wildfire smoke
+2.  **300 km influence radius** — fires within 300 km of a zone boundary meaningfully affect local PM2.5
+3.  **Zone independence** — Lower Fraser Valley and Southern Interior modeled separately; no cross-zone features
+
+:::
+:::::
+
+------------------------------------------------------------------------
 
 ## Model Architecture and Design Choice
 
@@ -68,6 +116,7 @@ Captures temporal dependence more flexibly and supports parallel training.
 
 ::::: columns
 ::: {.column width="50%"}
+
 **Architecture**
 
 -   Transformer encoder
@@ -80,12 +129,72 @@ Captures temporal dependence more flexibly and supports parallel training.
 Total parameters size: 0.106M
 
 Total parameters intentionally **kept small** to reduce overfitting.
+
 :::
 
 ::: {.column width="50%"}
+
 ![](./Assets/Outputs/CS2-PPT-output/transformer_architecture.png){width="100%"}
+
 :::
 :::::
+
+------------------------------------------------------------------------
+
+## Why Transformer? Model Selection and Trade-offs
+
+### From Baseline GAM to Transformer
+
+| Model | Improves | Still limited by |
+|:---|:---|:---|
+| **GAM (baseline)** | Nonlinear structure | Manual features, weak sequence modeling |
+| **LightGBM** | Identify useful predictors for nonlinear tabular learning | Limited time-series handling |
+| **LSTM + Autoencoder** | Sequence learning + feature compression | Slow sequential training |
+
+\vspace{0.15cm}
+
+**Therefore, we chose Transformer:**
+Captures temporal dependence more flexibly and supports parallel training.
+
+------------------------------------------------------------------------
+
+::: {.columns}
+::: {.column width="50%"}
+
+### Why Transformer
+
+-   **Sequence-aware**
+    models historical PM2.5 patterns directly
+
+-   **Long-range dependence**
+    can connect distant time steps more effectively
+
+-   **Flexible representation**
+    captures nonlinear temporal structure
+
+-   **Parallel training**
+    more scalable than recurrent models
+
+:::
+
+::: {.column width="50%"}
+
+### Trade-offs
+
+-   **Higher compute cost**
+    larger and more complex than GAM
+
+-   **More tuning required**
+    architecture and optimization settings matter
+
+-   **Lower interpretability**
+    harder to explain than smooth GAM effects
+
+-   **Overfitting risk**
+    requires careful validation and regularization
+
+:::
+:::
 
 ------------------------------------------------------------------------
 
@@ -99,7 +208,7 @@ We experimented with **more complex architectures** inspired by LLaMA:
 
 However:
 
--   Dataset size relatively small: 26245 data entries(12.05 MB) per Zone
+-   Dataset size relatively small: 26,245 data entries (12.05 MB) per zone
 -   Models trained **separately per zone**
 -   Complex variants did **not improve stability or performance**
 
@@ -109,7 +218,7 @@ Final decision:
 
 ------------------------------------------------------------------------
 
-## Optimization and Model Tuning
+## Model Fitting and Tuning
 
 ### Training Setup
 
@@ -204,43 +313,34 @@ Model predictions follow **PM2.5 trends in the unseen test year**, demonstrating
 
 ------------------------------------------------------------------------
 
-## 10. Main performance comparison
+## Main Performance Comparison
 
-| Zone                | model       | Precision@25 | Recall@25 | F1@25 | F2@25 |
+| Zone                | Model       | Precision@25 | Recall@25 | F1@25 | F2@25 |
 |---------------------|-------------|--------------|-----------|-------|-------|
-| Lower Fraser Valley | baseline    |        0.500 |     0.538 | 0.518 |       |
+| Lower Fraser Valley | Baseline    | 0.500        | 0.538     | 0.518 |       |
 |                     | Transformer | 0.538        | 0.538     | 0.538 | 0.538 |
-| Southern Interior   | baseline    |        0.945 |     0.896 | 0.920 |       |
+| Southern Interior   | Baseline    | 0.945        | 0.896     | 0.920 |       |
 |                     | Transformer | 0.945        | 0.888     | 0.916 | 0.899 |
 
-- Model performance differed sharply by air zone.
-
-- Southern Interior performed strongly: Precision 0.945, Recall 0.888, F1 0.916, F2 0.899.
-
-- Lower Fraser Valley performed much worse: all key metrics were 0.538.
-
-- Overall, the model appears reliable in the Southern Interior but much less dependable in the Lower Fraser Valley.
+-   Model performance differed sharply by air zone.
+-   Southern Interior performed strongly: Precision 0.945, Recall 0.888, F1 0.916, F2 0.899.
+-   Lower Fraser Valley performed much worse: all key metrics were 0.538.
+-   Overall, the model appears reliable in the Southern Interior but much less dependable in the Lower Fraser Valley.
 
 ------------------------------------------------------------------------
 
-## 11. Diagnostics and air-zone comparison
+## Diagnostics and Air-Zone Comparison
 
-- Diagnostics show that performance is highly region-dependent.
-
-- The Southern Interior appears to have clearer or more stable event patterns, which the model captured well.
-
-- The Lower Fraser Valley appears to be a more difficult forecasting environment, leading to weaker warning performance.
-
-- This comparison shows why zone-level evaluation matters: overall results alone would hide important regional differences.
+-   Diagnostics show that performance is highly region-dependent.
+-   The Southern Interior appears to have clearer or more stable event patterns, which the model captured well.
+-   The Lower Fraser Valley appears to be a more difficult forecasting environment, leading to weaker warning performance.
+-   This comparison shows why zone-level evaluation matters: overall results alone would hide important regional differences.
 
 ------------------------------------------------------------------------
 
-## 12. Limitations, uncertainty, and final takeaways
+## Limitations, Uncertainty, and Final Takeaways
 
-- Results should be interpreted with caution because performance is not consistent across air zones.
-
-- The weaker Lower Fraser Valley results indicate greater uncertainty and a higher risk of unreliable warnings.
-
-- The approach shows clear promise, especially for the Southern Interior.
-
-- Main takeaway: the model has value, but further refinement and zone-specific tuning are needed before broader operational use.
+-   Results should be interpreted with caution because performance is not consistent across air zones.
+-   The weaker Lower Fraser Valley results indicate greater uncertainty and a higher risk of unreliable warnings.
+-   The approach shows clear promise, especially for the Southern Interior.
+-   Main takeaway: the model has value, but further refinement and zone-specific tuning are needed before broader operational use.
