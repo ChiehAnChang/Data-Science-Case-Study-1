@@ -36,15 +36,15 @@ Environmental Health Director — responsible for timely, defensible air-quality
 
 ------------------------------------------------------------------------
 
-## Data Pipeline and Feature Engineering
+## Data Pipeline
 
 ::::: columns
 ::: {.column width="50%"}
 
 **Two data sources (2022–2025):**
 
--   **PM2.5** — CS1 pipeline (BC AQMS, zone-median, hourly, PST → UTC +8h)
--   **Wildfire** — CWFIS satellite hotspots (MODIS/VIIRS, UTC)
+-   **PM2.5** — CS1 pipeline (BC AQMS, zone-median, hourly)
+-   **Wildfire** — CWFIS satellite hotspots
 
 **Key design decisions:**
 
@@ -62,15 +62,6 @@ Environmental Health Director — responsible for timely, defensible air-quality
 -   `fire_count`, `frp_sum` (local & regional)
 -   `hfi_weighted`, `fwi_mean`
 
-**Engineered features:**
-
-| Feature | Values |
-|:--------|:-------|
-| PM2.5 lags | 1h, 6h, 24h, 48h |
-| Rolling | 24h mean/max, 7d mean |
-| Fire rolling | frp 24h/72h sum |
-| Calendar | hour, dow, month, season |
-
 :::
 :::::
 
@@ -84,10 +75,6 @@ Environmental Health Director — responsible for timely, defensible air-quality
 **Data Structure:**
 
 -   70,128 rows × 11 features, 2 zones, hourly UTC
--   Sliding window: $X = (N,\ 72,\ 11)$, $y =$ PM2.5 at $t+3$
--   Temporal split — Train: 2022–2024 \quad Test: 2025
-
-\vspace{0.3cm}
 
 **Data Augmentation:**
 
@@ -104,37 +91,6 @@ Environmental Health Director — responsible for timely, defensible air-quality
 1.  **Wildfire drives PM2.5** — spikes in BC air quality are primarily caused by wildfire smoke
 2.  **300 km influence radius** — fires within 300 km of a zone boundary meaningfully affect local PM2.5
 3.  **Zone independence** — Lower Fraser Valley and Southern Interior modeled separately; no cross-zone features
-
-:::
-:::::
-
-------------------------------------------------------------------------
-
-## Model Architecture and Design Choice
-
-### Transformer Model Structure
-
-::::: columns
-::: {.column width="50%"}
-
-**Architecture**
-
--   Transformer encoder
--   Sequence input: **96 hours**
--   d_model = 64
--   2 attention heads
--   2 Transformer layers
--   dropout = 0.1
-
-Total parameters size: 0.106M
-
-Total parameters intentionally **kept small** to reduce overfitting.
-
-:::
-
-::: {.column width="50%"}
-
-![](./Assets/Outputs/CS2-PPT-output/transformer_architecture.png){width="100%"}
 
 :::
 :::::
@@ -198,6 +154,37 @@ Captures temporal dependence more flexibly and supports parallel training.
 
 ------------------------------------------------------------------------
 
+## Model Architecture and Design Choice
+
+### Transformer Model Structure
+
+::::: columns
+::: {.column width="50%"}
+
+**Architecture**
+
+-   Transformer encoder
+-   Window size: **96 observations**
+-   d_model = 64
+-   2 attention heads
+-   2 Transformer layers
+-   dropout = 0.1
+
+Total parameters size: 0.106M
+
+Total parameters intentionally **kept small** to reduce overfitting.
+
+:::
+
+::: {.column width="50%"}
+
+![](./Assets/Outputs/CS2-PPT-output/transformer_architecture.png){width="100%"}
+
+:::
+:::::
+
+------------------------------------------------------------------------
+
 ### Why Not More Complex Alternatives?
 
 We experimented with **more complex architectures** inspired by LLaMA:
@@ -233,8 +220,6 @@ Training parameters:
 -   Learning rate: 5e-4 → 5e-6 (cosine decay)
 -   Weight decay: 0.05
 
-Hyperparameter search was performed using **manual exploration**.
-
 ------------------------------------------------------------------------
 
 ### Feature and Window Experiments
@@ -247,9 +232,9 @@ Feature set includes:
 
 Window length experiment:
 
-12h, 24h, 48h, 72h, **96h**, 168h
+12, 24, 48, 72, **96**, 168 observations
 
-Best performance observed at **96 hours**.
+Best performance observed at **96 observations**.
 
 ------------------------------------------------------------------------
 
@@ -265,31 +250,7 @@ Training monitored using **train and test loss curves** across 10 epochs.
 
 ------------------------------------------------------------------------
 
-### Final Model Performance
-
-| Zone                | RMSE  | MAE   | R²    | N_test |
-|---------------------|-------|-------|-------|--------|
-| Lower Fraser Valley | 1.108 | 0.659 | 0.843 | 8710   |
-| Southern Interior   | 1.801 | 1.230 | 0.863 | 8710   |
-
-------------------------------------------------------------------------
-
-## Validation Strategy and Leakage Prevention
-
-### Time-Series Evaluation
-
-Random data splits are **inappropriate for time-series data**, because they allow future observations to influence training.
-
-Instead we use **temporal splitting**.
-
-![](./Assets/Outputs/CS2-PPT-output/temporal_split.png)
-
-Train: **2022–2024**\
-Test: **2025**
-
-------------------------------------------------------------------------
-
-### Leakage Prevention
+## Leakage Prevention
 
 Several safeguards were applied:
 
@@ -315,21 +276,28 @@ Model predictions follow **PM2.5 trends in the unseen test year**, demonstrating
 
 ## Main Performance Comparison
 
-| Zone                | Model       | Precision@25 | Recall@25 | F1@25 | F2@25 |
-|---------------------|-------------|--------------|-----------|-------|-------|
-| Lower Fraser Valley | Baseline    | 0.500        | 0.538     | 0.518 |       |
-|                     | Transformer | 0.538        | 0.538     | 0.538 | 0.538 |
-| Southern Interior   | Baseline    | 0.945        | 0.896     | 0.920 |       |
-|                     | Transformer | 0.945        | 0.888     | 0.916 | 0.899 |
+| Zone                | Model       | Precision@25 | Recall@25 | F1@25 |
+|---------------------|-------------|--------------|-----------|-------|
+| Lower Fraser Valley | Baseline    | 0.500        | 0.538     | 0.518 |
+|                     | Transformer | 0.538        | 0.538     | 0.538 |
+| Southern Interior   | Baseline    | 0.945        | 0.896     | 0.920 |
+|                     | Transformer | 0.945        | 0.888     | 0.916 |
 
 -   Model performance differed sharply by air zone.
--   Southern Interior performed strongly: Precision 0.945, Recall 0.888, F1 0.916, F2 0.899.
+-   Southern Interior performed strongly: Precision 0.945, Recall 0.888, F1 0.916.
 -   Lower Fraser Valley performed much worse: all key metrics were 0.538.
 -   Overall, the model appears reliable in the Southern Interior but much less dependable in the Lower Fraser Valley.
 
 ------------------------------------------------------------------------
 
 ## Diagnostics and Air-Zone Comparison
+
+| Zone                | Model       | Precision@25 | Recall@25 | F1@25 |
+|---------------------|-------------|--------------|-----------|-------|
+| Lower Fraser Valley | Baseline    | 0.500        | 0.538     | 0.518 |
+|                     | Transformer | 0.538        | 0.538     | 0.538 |
+| Southern Interior   | Baseline    | 0.945        | 0.896     | 0.920 |
+|                     | Transformer | 0.945        | 0.888     | 0.916 |
 
 -   Diagnostics show that performance is highly region-dependent.
 -   The Southern Interior appears to have clearer or more stable event patterns, which the model captured well.
@@ -344,3 +312,27 @@ Model predictions follow **PM2.5 trends in the unseen test year**, demonstrating
 -   The weaker Lower Fraser Valley results indicate greater uncertainty and a higher risk of unreliable warnings.
 -   The approach shows clear promise, especially for the Southern Interior.
 -   Main takeaway: the model has value, but further refinement and zone-specific tuning are needed before broader operational use.
+
+# Appendix
+
+## CWFIS Data Source
+
+**Canadian Wildfire Information System (CWFIS):**
+
+-   Satellite hotspot detections from **MODIS** and **VIIRS** sensors
+-   Data provided in **UTC** timezone
+-   Matched to PM2.5 hourly records after timezone alignment (PST → UTC +8h)
+
+------------------------------------------------------------------------
+
+## Wildfire Signal Definitions
+
+| Signal | Description |
+|:-------|:------------|
+| `fire_count` | Number of active fire hotspots within radius |
+| `frp_sum` | Total Fire Radiative Power (MW) within radius |
+| `hfi_weighted` | IDW-weighted Head Fire Intensity |
+| `fwi_mean` | Mean Fire Weather Index within radius |
+
+Local signals use the zone's **polygon boundary**; regional signals use a **300 km radius**.
+
