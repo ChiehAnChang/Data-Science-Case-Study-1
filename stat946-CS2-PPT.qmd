@@ -1,5 +1,6 @@
 ---
-title: "Wildfire Smoke Prediction"
+title: "Wildfire Smoke & PM2.5 Forecasting"
+subtitle: "CS2: Transformer-Based Air Quality Prediction"
 format:
   beamer:
     theme: Madrid
@@ -7,14 +8,103 @@ format:
     slide-level: 2
 ---
 
-## Model Selection Process
+## Why PM2.5 Forecasting Matters
 
-### From baseline GAM to Transformer
+### Motivation
+
+The asthma rate in the BC area has nearly doubled, rising from 5.25% to 9.88%.
+
+### Primary Stakeholder
+
+Environmental Health Director — responsible for timely, defensible air-quality advisories used across provincial partners.
+
+------------------------------------------------------------------------
+
+## CS1 Limitations and CS2 Objectives
+
+### CS1 Limitations
+
+-   Relied on historical PM2.5 patterns; using too few features risks over-reliance on a single factor.
+-   Lacked short- and long-term memory, which is problematic for time-series data.
+-   The model was too conservative, causing it to miss rapid, non-linear spikes (notably from wildfire smoke).
+
+### CS2 Objectives
+
+-   Expand the feature set to capture environmental complexity.
+-   Incorporate memory into the model to better handle time-series dynamics.
+-   Improve the model's sensitivity so it is less conservative during extreme events.
+
+------------------------------------------------------------------------
+
+## Data Pipeline
+
+::::: columns
+::: {.column width="50%"}
+
+**Two data sources (2022–2025):**
+
+-   **PM2.5** — CS1 pipeline (BC AQMS, zone-median, hourly)
+-   **Wildfire** — CWFIS satellite hotspots
+
+**Key design decisions:**
+
+-   Zone **polygon boundary** distance, not centroid
+-   **300 km** regional radius — cross-zone smoke transport
+-   IDW weighting ($1/d^2$) — closer fires weighted more
+-   Non-fire hours **zero-filled**, not missing
+
+:::
+
+::: {.column width="50%"}
+
+**Wildfire signals:**
+
+-   `fire_count`, `frp_sum` (local & regional)
+-   `hfi_weighted`, `fwi_mean`
+
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Data Structure and Modeling Assumptions
+
+::::: columns
+::: {.column width="50%"}
+
+**Data Structure:**
+
+-   70,128 rows × 11 features, 2 zones, hourly UTC
+
+**Data Augmentation:**
+
+-   **PCHIP interpolation** — upsample hourly → 30-min
+-   Doubles training sequences; smoother PM2.5 transitions
+-   *Assumption: more data improves model generalization*
+
+:::
+
+::: {.column width="50%"}
+
+**Data Assumptions:**
+
+1.  **Wildfire drives PM2.5** — spikes in BC air quality are primarily caused by wildfire smoke
+2.  **300 km influence radius** — fires within 300 km of a zone boundary meaningfully affect local PM2.5
+3.  **Zone independence** — Lower Fraser Valley and Southern Interior modeled separately; no cross-zone features
+
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Why Transformer? Model Selection and Trade-offs
+
+### From Baseline GAM to Transformer
 
 | Model | Improves | Still limited by |
 |:---|:---|:---|
 | **GAM (baseline)** | Nonlinear structure | Manual features, weak sequence modeling |
-| **Light GBM** | identify useful predictors for Nonlinear tabular learning | Limited time-series handling |
+| **LightGBM** | Identify useful predictors for nonlinear tabular learning | Limited time-series handling |
 | **LSTM + Autoencoder** | Sequence learning + feature compression | Slow sequential training |
 
 \vspace{0.15cm}
@@ -22,24 +112,24 @@ format:
 **Therefore, we chose Transformer:**
 Captures temporal dependence more flexibly and supports parallel training.
 
-## Transformer Advantages and Trade-offs
+------------------------------------------------------------------------
 
 ::: {.columns}
 ::: {.column width="50%"}
 
 ### Why Transformer
 
-- **Sequence-aware**
-  models historical PM2.5 patterns directly
+-   **Sequence-aware**
+    models historical PM2.5 patterns directly
 
-- **Long-range dependence**
-  can connect distant time steps more effectively
+-   **Long-range dependence**
+    can connect distant time steps more effectively
 
-- **Flexible representation**
-  captures nonlinear temporal structure
+-   **Flexible representation**
+    captures nonlinear temporal structure
 
-- **Parallel training**
-  more scalable than recurrent models
+-   **Parallel training**
+    more scalable than recurrent models
 
 :::
 
@@ -47,20 +137,22 @@ Captures temporal dependence more flexibly and supports parallel training.
 
 ### Trade-offs
 
-- **Higher compute cost**
-  larger and more complex than GAM
+-   **Higher compute cost**
+    larger and more complex than GAM
 
-- **More tuning required**
-  architecture and optimization settings matter
+-   **More tuning required**
+    architecture and optimization settings matter
 
-- **Lower interpretability**
-  harder to explain than smooth GAM effects
+-   **Lower interpretability**
+    harder to explain than smooth GAM effects
 
-- **Overfitting risk**
-  requires careful validation and regularization
+-   **Overfitting risk**
+    requires careful validation and regularization
 
 :::
 :::
+
+------------------------------------------------------------------------
 
 ## Model Architecture and Design Choice
 
@@ -68,10 +160,11 @@ Captures temporal dependence more flexibly and supports parallel training.
 
 ::::: columns
 ::: {.column width="50%"}
+
 **Architecture**
 
 -   Transformer encoder
--   Sequence input: **96 hours**
+-   Window size: **96 observations**
 -   d_model = 64
 -   2 attention heads
 -   2 Transformer layers
@@ -80,10 +173,13 @@ Captures temporal dependence more flexibly and supports parallel training.
 Total parameters size: 0.106M
 
 Total parameters intentionally **kept small** to reduce overfitting.
+
 :::
 
 ::: {.column width="50%"}
+
 ![](./Assets/Outputs/CS2-PPT-output/transformer_architecture.png){width="100%"}
+
 :::
 :::::
 
@@ -99,7 +195,7 @@ We experimented with **more complex architectures** inspired by LLaMA:
 
 However:
 
--   Dataset size relatively small: 26245 data entries(12.05 MB) per Zone
+-   Dataset size relatively small: 26,245 data entries (12.05 MB) per zone
 -   Models trained **separately per zone**
 -   Complex variants did **not improve stability or performance**
 
@@ -109,7 +205,7 @@ Final decision:
 
 ------------------------------------------------------------------------
 
-## Optimization and Model Tuning
+## Model Fitting and Tuning
 
 ### Training Setup
 
@@ -124,8 +220,6 @@ Training parameters:
 -   Learning rate: 5e-4 → 5e-6 (cosine decay)
 -   Weight decay: 0.05
 
-Hyperparameter search was performed using **manual exploration**.
-
 ------------------------------------------------------------------------
 
 ### Feature and Window Experiments
@@ -138,9 +232,9 @@ Feature set includes:
 
 Window length experiment:
 
-12h, 24h, 48h, 72h, **96h**, 168h
+12, 24, 48, 72, **96**, 168 observations
 
-Best performance observed at **96 hours**.
+Best performance observed at **96 observations**.
 
 ------------------------------------------------------------------------
 
@@ -156,31 +250,7 @@ Training monitored using **train and test loss curves** across 10 epochs.
 
 ------------------------------------------------------------------------
 
-### Final Model Performance
-
-| Zone                | RMSE  | MAE   | R²    | N_test |
-|---------------------|-------|-------|-------|--------|
-| Lower Fraser Valley | 1.108 | 0.659 | 0.843 | 8710   |
-| Southern Interior   | 1.801 | 1.230 | 0.863 | 8710   |
-
-------------------------------------------------------------------------
-
-## Validation Strategy and Leakage Prevention
-
-### Time-Series Evaluation
-
-Random data splits are **inappropriate for time-series data**, because they allow future observations to influence training.
-
-Instead we use **temporal splitting**.
-
-![](./Assets/Outputs/CS2-PPT-output/temporal_split.png)
-
-Train: **2022–2024**\
-Test: **2025**
-
-------------------------------------------------------------------------
-
-### Leakage Prevention
+## Leakage Prevention
 
 Several safeguards were applied:
 
@@ -204,43 +274,65 @@ Model predictions follow **PM2.5 trends in the unseen test year**, demonstrating
 
 ------------------------------------------------------------------------
 
-## 10. Main performance comparison
+## Main Performance Comparison
 
-| Zone                | model       | Precision@25 | Recall@25 | F1@25 | F2@25 |
-|---------------------|-------------|--------------|-----------|-------|-------|
-| Lower Fraser Valley | baseline    |        0.500 |     0.538 | 0.518 |       |
-|                     | Transformer | 0.538        | 0.538     | 0.538 | 0.538 |
-| Southern Interior   | baseline    |        0.945 |     0.896 | 0.920 |       |
-|                     | Transformer | 0.945        | 0.888     | 0.916 | 0.899 |
+| Zone                | Model       | Precision@25 | Recall@25 | F1@25 |
+|---------------------|-------------|--------------|-----------|-------|
+| Lower Fraser Valley | Baseline    | 0.500        | 0.538     | 0.518 |
+|                     | Transformer | 0.538        | 0.538     | 0.538 |
+| Southern Interior   | Baseline    | 0.945        | 0.896     | 0.920 |
+|                     | Transformer | 0.945        | 0.888     | 0.916 |
 
-- Model performance differed sharply by air zone.
-
-- Southern Interior performed strongly: Precision 0.945, Recall 0.888, F1 0.916, F2 0.899.
-
-- Lower Fraser Valley performed much worse: all key metrics were 0.538.
-
-- Overall, the model appears reliable in the Southern Interior but much less dependable in the Lower Fraser Valley.
+-   Model performance differed sharply by air zone.
+-   Southern Interior performed strongly: Precision 0.945, Recall 0.888, F1 0.916.
+-   Lower Fraser Valley performed much worse: all key metrics were 0.538.
+-   Overall, the model appears reliable in the Southern Interior but much less dependable in the Lower Fraser Valley.
 
 ------------------------------------------------------------------------
 
-## 11. Diagnostics and air-zone comparison
+## Diagnostics and Air-Zone Comparison
 
-- Diagnostics show that performance is highly region-dependent.
+| Zone                | Model       | Precision@25 | Recall@25 | F1@25 |
+|---------------------|-------------|--------------|-----------|-------|
+| Lower Fraser Valley | Baseline    | 0.500        | 0.538     | 0.518 |
+|                     | Transformer | 0.538        | 0.538     | 0.538 |
+| Southern Interior   | Baseline    | 0.945        | 0.896     | 0.920 |
+|                     | Transformer | 0.945        | 0.888     | 0.916 |
 
-- The Southern Interior appears to have clearer or more stable event patterns, which the model captured well.
-
-- The Lower Fraser Valley appears to be a more difficult forecasting environment, leading to weaker warning performance.
-
-- This comparison shows why zone-level evaluation matters: overall results alone would hide important regional differences.
+-   Diagnostics show that performance is highly region-dependent.
+-   The Southern Interior appears to have clearer or more stable event patterns, which the model captured well.
+-   The Lower Fraser Valley appears to be a more difficult forecasting environment, leading to weaker warning performance.
+-   This comparison shows why zone-level evaluation matters: overall results alone would hide important regional differences.
 
 ------------------------------------------------------------------------
 
-## 12. Limitations, uncertainty, and final takeaways
+## Limitations, Uncertainty, and Final Takeaways
 
-- Results should be interpreted with caution because performance is not consistent across air zones.
+-   Results should be interpreted with caution because performance is not consistent across air zones.
+-   The weaker Lower Fraser Valley results indicate greater uncertainty and a higher risk of unreliable warnings.
+-   The approach shows clear promise, especially for the Southern Interior.
+-   Main takeaway: the model has value, but further refinement and zone-specific tuning are needed before broader operational use.
 
-- The weaker Lower Fraser Valley results indicate greater uncertainty and a higher risk of unreliable warnings.
+# Appendix
 
-- The approach shows clear promise, especially for the Southern Interior.
+## CWFIS Data Source
 
-- Main takeaway: the model has value, but further refinement and zone-specific tuning are needed before broader operational use.
+**Canadian Wildfire Information System (CWFIS):**
+
+-   Satellite hotspot detections from **MODIS** and **VIIRS** sensors
+-   Data provided in **UTC** timezone
+-   Matched to PM2.5 hourly records after timezone alignment (PST → UTC +8h)
+
+------------------------------------------------------------------------
+
+## Wildfire Signal Definitions
+
+| Signal | Description |
+|:-------|:------------|
+| `fire_count` | Number of active fire hotspots within radius |
+| `frp_sum` | Total Fire Radiative Power (MW) within radius |
+| `hfi_weighted` | IDW-weighted Head Fire Intensity |
+| `fwi_mean` | Mean Fire Weather Index within radius |
+
+Local signals use the zone's **polygon boundary**; regional signals use a **300 km radius**.
+
