@@ -8,13 +8,13 @@ The models explored range from statistical baselines to deep learning sequence m
 
 ## Directory Structure & File Overview
 
-- **`CS2 Modeling Generalization Interface.ipynb`**: 
+- **`CS2 Additional Modeling.ipynb`**: 
   The core generalization interface notebook for the modeling pipeline. It handles data loading, region-based iteration, chronological temporal splitting (preventing data leakage), model instantiation, training, threshold tuning, and final visualizations.
   
 - **`model_pipeline.py`**:
   The previous modeling pipeline established during Phase 1 of the case study. It handles foundational sequence construction, train/validation boundaries, and earlier exploratory executions, serving as historical modeling context for earlier iterations.
 
-- **`CS2 Modeling.ipynb`**:
+- **`CS2 Main Experimental Modeling.ipynb`**:
   The main experimental pipelines supporting the Transformer architectures. They oversee sequence construction, train/validation boundaries, and the execution of the LLaMA-style and GPT-style models.
 
 - **`Models/`**: A package containing the object-oriented implementations of the additional predictive architectures:
