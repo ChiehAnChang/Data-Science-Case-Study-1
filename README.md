@@ -2,7 +2,7 @@
 
 This repository contains the full workflow for STAT 946 Case Study 1, from raw PM2.5 data processing to exploratory analysis, modeling, and presentation outputs.
 
-**Authors:** Andy, Erick, Henry, Jason, Peter (in alphabetical order)
+**Authors:** Chieh-An (Andy) Chang, Wenjia (Erick) Gu, Haoran Pan, Yujie Wen, Henry Zhang (in alphabetical order)
 
 ## Acknowledgements
 This project was completed under the instruction and guidance of Professor Lysy and Teaching Assistant Diane Zhang.  
