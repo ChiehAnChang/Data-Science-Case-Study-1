@@ -1,6 +1,13 @@
 ---
 title: "Wildfire Smoke & PM2.5 Forecasting"
 subtitle: "CS2: Transformer-Based Air Quality Prediction"
+author:
+  - "Chieh-An (Andy) Chang"
+  - "Wenjia (Erick) Gu"
+  - "Haoran Pan"
+  - "Yujie Wen"
+  - "Runhua (Henry) Zhang"
+thanks: "Authors are listed in alphabetical order."
 format:
   beamer:
     theme: Madrid
@@ -283,10 +290,12 @@ Model predictions follow **PM2.5 trends in the unseen test year**, demonstrating
 | Southern Interior   | Baseline    | 0.945        | 0.896     | 0.920 |
 |                     | Transformer | 0.945        | 0.888     | 0.916 |
 
+-   Metrics are evaluated at a **PM2.5 threshold of 25 µg/m³**, where values at or above 25 are treated as high-pollution events.
 -   Model performance differed sharply by air zone.
 -   Southern Interior performed strongly: Precision 0.945, Recall 0.888, F1 0.916.
 -   Lower Fraser Valley performed much worse: all key metrics were 0.538.
 -   Overall, the model appears reliable in the Southern Interior but much less dependable in the Lower Fraser Valley.
+
 
 ------------------------------------------------------------------------
 
