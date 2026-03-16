@@ -75,8 +75,13 @@ A dedicated experimental block loops through multiple input sequence lengths (12
 ## 4. Reproducibility & Usage Notes
 
 To successfully reproduce the modeling environment:
+
 1. Ensure identical feature definitions for the base and wildfire subgroups.
-2. The core system must uniformly process the designated training, validation, and testing periods chronologically. 
+   
+2. The core system must uniformly process the designated training, validation, and testing periods chronologically.
+    
 3. Call `.fit()` on training data, use `.tune_threshold()` on validating matrices to isolate the optimal alert cutoff, and evaluate final `.predict()` behavior against 2025 values across target geographic zones (filtered specifically for Wildfire seasons when evaluating spike sensitivity).
+   
 4. For baseline/additional models, simply instantiate from the `Models` package utilizing the shared OOP interfaces.
+   
 5. Use consistent random seeds, learning rate schedulers (`CosineAnnealingLR`), and optimizers (`AdamW` with grouped weight decay) when replicating the Transformer training procedures.
