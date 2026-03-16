@@ -42,7 +42,7 @@ This split supports direct comparisons isolating the exact modeling impact of in
 
 Our exploration follows a progressive complexity curve:
 
-### A. Phase 1 & Exploratory Baselines
+### A. Exploratory Basic Model
 - **GAM (LinearGAM)**: Establishes a foundational statistical baseline for standard air-quality vs. wildfire-enhanced predictions.
 - **LightGBM (`lightboost.py`)**: Provides a highly-efficient, tree-based model that utilizes engineered lag features to deduce trends accurately without deep sequence logic.
 

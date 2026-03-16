@@ -1,5 +1,14 @@
 # EDA Pipeline Guide
 
+## Scope: Case Study 1 Only
+
+This pipeline covers **Case Study 1 (CS1)** work only. Case Study 2 (CS2) is an extension of CS1 — it consumes the CS1 cleaned PM2.5 output (`Dataset/Outputs/PM25_zone_wide_imputed_2022_2025.csv`) and adds wildfire signals on top. Because CS2 depends on raw CWFIS hotspot data that is too large to commit (~9.6M rows), it cannot be reproduced in CI and is intended to be run **locally only**. The CS1 pipeline is therefore kept intact and unchanged as the upstream dependency that CS2 builds on.
+
+For CS2 pipeline documentation, see `ETL & EDA/README_CS2.md`.
+
+---
+
+
 ## How the CI Pipeline Works
 
 ```
