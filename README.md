@@ -114,7 +114,7 @@ Outputs are saved under `Assets/Outputs/CS2-PPT-output/`.
 
 - `Model/`: modeling notebooks, training pipeline, and model implementations.
 	- `Model/CS2 Main Experimental Modeling.ipynb`: main modeling notebook.
-	- `Model/CS2 Additional Modeling.ipynb`: generalization-focused modeling notebook.
+	- `Model/CS2 Additional Modeling.ipynb`: additional modeling notebook.
 	- `Model/model_pipeline.py`: reusable model training/evaluation pipeline.
 	- `Model/Models/`: model class implementations.
 		- `Model/Models/base_model.py`: base model interfaces/utilities.
