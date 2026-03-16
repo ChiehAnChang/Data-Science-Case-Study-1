@@ -22,7 +22,7 @@ This case study integrates:
 - Presentation deck source: `stat946-CS2-PPT.qmd`
 - ETL pipeline: `ETL & EDA/ETL_pipeline_cs2.py` (produces the model-ready CS2 table)
 - EDA writeup: `EDA/executive_summary.qmd`
-- Modeling notebooks: `Model/CS2 Modeling.ipynb` and `Model/CS2 Modeling Generalization Interface.ipynb`
+- Modeling notebooks: `Model/CS2 Additional Modeling.ipynb` and `Model/CS2 Main Experimental Modeling.ipynb`
 - Final model input table: `Dataset/Outputs/CS2_model_input.csv`
 
 ## Quickstart (Repro)
@@ -67,8 +67,8 @@ This produces the model-ready table:
 ### 4) Modeling
 
 - Run the modeling notebooks in `Model/`:
-	- `Model/CS2 Modeling.ipynb`
-	- `Model/CS2 Modeling Generalization Interface.ipynb`
+	- `CS2 Additional Modeling.ipynb`
+	- `CS2 Main Experimental Modeling.ipynb`
 
 ### 5) Render slides
 
@@ -113,8 +113,8 @@ Outputs are saved under `Assets/Outputs/CS2-PPT-output/`.
 	- `ETL & EDA/README_CS2.md`: ETL/EDA workflow documentation.
 
 - `Model/`: modeling notebooks, training pipeline, and model implementations.
-	- `Model/CS2 Modeling.ipynb`: main modeling notebook.
-	- `Model/CS2 Modeling Generalization Interface.ipynb`: generalization-focused modeling notebook.
+	- `Model/CS2 Main Experimental Modeling.ipynb`: main modeling notebook.
+	- `Model/CS2 Additional Modeling.ipynb`: generalization-focused modeling notebook.
 	- `Model/model_pipeline.py`: reusable model training/evaluation pipeline.
 	- `Model/Models/`: model class implementations.
 		- `Model/Models/base_model.py`: base model interfaces/utilities.
